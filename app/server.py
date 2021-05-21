@@ -3,7 +3,7 @@ import threading
 
 
 class Server:
-    def __init__(self, host, port, buff_size, *, encoding="utf-8"):
+    def __init__(self, host, port, *, buff_size=1024, encoding="utf-8"):
         self.host = host
         self.port = port
         self.buff_size = buff_size
@@ -13,9 +13,6 @@ class Server:
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.s.bind((host, port))
         self.s.listen()
-
-        with open("templates/index.html") as f:
-            self.index = f.read()
 
     def __del__(self):
         self.s.close()
@@ -42,10 +39,9 @@ class Server:
         return request.decode(self.encoding)
 
     def handle_request(self, request):
-        page = self.index.format(request)
-        return page.encode(self.encoding)
+        return request.encode(self.encoding)
 
 
-if __name__ == '__main__':
-    server = Server("127.0.0.1", 8000, 1024)
+if __name__ == "__main__":
+    server = Server("127.0.0.1", 8000)
     server.run()
