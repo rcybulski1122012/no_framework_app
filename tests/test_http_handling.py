@@ -1,5 +1,5 @@
 import pytest
-from app.http_handling import HttpRequest
+from app.http_handling import HttpRequest, InvalidHttpRequest
 
 
 GET_request = ("GET /hello.htm HTTP/1.1\n"
@@ -11,7 +11,7 @@ POST_request = ("POST /cgi-bin/process.cgi HTTP/1.1\n"
                 "Content-Type: application/x-www-form-urlencoded\n"
                 "Content-Length: length\n"
                 "Accept-Language: en-us\n\n"
-                "licenseID=string&content=string&/paramsXML=string")
+                "licenseID=string&content=string&/paramsXML=string\n")
 
 
 GET_request_test_data = [
@@ -46,3 +46,9 @@ def test_HttpRequest_GET_request(element, expected):
 def test_HttpRequest_POST_request(element, expected):
     request = HttpRequest(POST_request)
     assert getattr(request, element) == expected
+
+
+def test_HttpRequest_raises_exception_when_bad_request():
+    request_str = "BAD REQUEST"
+    with pytest.raises(InvalidHttpRequest):
+        HttpRequest(request_str)

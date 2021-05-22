@@ -1,5 +1,4 @@
 import socket
-import threading
 
 
 class Server:
@@ -17,16 +16,9 @@ class Server:
     def __del__(self):
         self.s.close()
 
-    def run(self):
-        while True:
-            conn, addr = self.s.accept()
-            threading.Thread(target=self.handle_client, args=(conn, addr)).start()
-
-    def handle_client(self, conn, addr):
-        with conn:
-            request = self.receive_request(conn)
-            response = self.handle_request(request)
-            conn.sendall(b"HTTP/1.1 200 OK\n\n" + response)
+    def listen_for_client(self):
+        conn, addr = self.s.accept()
+        return conn, addr
 
     def receive_request(self, conn):
         request = b""
@@ -38,10 +30,5 @@ class Server:
 
         return request.decode(self.encoding)
 
-    def handle_request(self, request):
-        return request.encode(self.encoding)
-
-
-if __name__ == "__main__":
-    server = Server("127.0.0.1", 8000)
-    server.run()
+    def send_response(self, conn, response):
+        conn.sendall(response.encode(self.encoding))
