@@ -2,10 +2,9 @@ import socket
 
 
 class Server:
-    def __init__(self, host, port, *, buff_size=1024, encoding="utf-8"):
+    def __init__(self, host, port, *, encoding="utf-8"):
         self.host = host
         self.port = port
-        self.buff_size = buff_size
         self.encoding = encoding
 
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -21,13 +20,7 @@ class Server:
         return conn, addr
 
     def receive_request(self, conn):
-        request = b""
-        while True:
-            part = conn.recv(self.buff_size)
-            request += part
-            if len(part) < self.buff_size:
-                break
-
+        request = conn.recv(8192)
         return request.decode(self.encoding)
 
     def send_response(self, conn, response):
