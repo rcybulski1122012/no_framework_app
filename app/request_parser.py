@@ -1,5 +1,5 @@
-class InvalidHttpRequest(Exception):
-    pass
+from app.errors import Http400
+from app.utils import CaseInsensitiveDict
 
 
 class HttpRequest:
@@ -7,8 +7,11 @@ class HttpRequest:
         self.method = ""
         self.path = ""
         self.version = ""
-        self.headers = {}
+        self.headers = CaseInsensitiveDict()
         self.body = ""
+
+        request_string = request_string.replace(b"\r", b"")
+        request_string = request_string.decode("utf-8")
         self.request_string = request_string.strip()
 
         try:
@@ -16,7 +19,7 @@ class HttpRequest:
             self._parse_headers(self.request_string)
             self._parse_body(self.request_string)
         except Exception:
-            raise InvalidHttpRequest
+            raise Http400
 
     def _parse_request_line(self, request_string):
         request_line = request_string.split("\n")[0]
@@ -33,7 +36,7 @@ class HttpRequest:
         headers_strings = request_string[1:end_of_headers]
         for header_string in headers_strings:
             colon_index = header_string.index(":")
-            key, value = header_string[:colon_index], header_string[colon_index+2:]
+            key, value = header_string[:colon_index], header_string[colon_index + 2 :]
             self.headers[key] = value
 
     def _parse_body(self, request_string):

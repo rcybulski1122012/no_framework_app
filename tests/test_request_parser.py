@@ -1,24 +1,27 @@
 import pytest
-from app.request_parser import HttpRequest, InvalidHttpRequest
 
+from app.errors import Http400
+from app.request_parser import HttpRequest
 
-GET_request = ("GET /hello.htm HTTP/1.1\n"
-               "Host: www.host.com\n"
-               "Accept-Language: en-us\n")
+GET_request = (
+    b"GET /hello.htm HTTP/1.1\n" b"Host: www.host.com\n" b"Accept-Language: en-us\n"
+)
 
-POST_request = ("POST /cgi-bin/process.cgi HTTP/1.1\n"
-                "Host: www.host.com\n"
-                "Content-Type: application/x-www-form-urlencoded\n"
-                "Content-Length: length\n"
-                "Accept-Language: en-us\n\n"
-                "licenseID=string&content=string&/paramsXML=string\n")
+POST_request = (
+    b"POST /cgi-bin/process.cgi HTTP/1.1\n"
+    b"Host: www.host.com\n"
+    b"Content-Type: application/x-www-form-urlencoded\n"
+    b"Content-Length: length\n"
+    b"Accept-Language: en-us\n\n"
+    b"licenseID=string&content=string&/paramsXML=string\n"
+)
 
 
 GET_request_test_data = [
     ("method", "GET"),
     ("path", "/hello.htm"),
     ("version", "HTTP/1.1"),
-    ("headers", {"Host": "www.host.com", "Accept-Language": "en-us"}),
+    ("headers", {"host": "www.host.com", "accept-language": "en-us"}),
     ("body", ""),
 ]
 
@@ -26,12 +29,15 @@ POST_request_test_data = [
     ("method", "POST"),
     ("path", "/cgi-bin/process.cgi"),
     ("version", "HTTP/1.1"),
-    ("headers", {
-        "Host": "www.host.com",
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Content-Length": "length",
-        "Accept-Language": "en-us",
-    }),
+    (
+        "headers",
+        {
+            "host": "www.host.com",
+            "content-type": "application/x-www-form-urlencoded",
+            "content-length": "length",
+            "accept-language": "en-us",
+        },
+    ),
     ("body", "licenseID=string&content=string&/paramsXML=string"),
 ]
 
@@ -49,6 +55,6 @@ def test_HttpRequest_POST_request(element, expected):
 
 
 def test_HttpRequest_raises_exception_when_bad_request():
-    request_str = "BAD REQUEST"
-    with pytest.raises(InvalidHttpRequest):
+    request_str = b"BAD REQUEST"
+    with pytest.raises(Http400):
         HttpRequest(request_str)

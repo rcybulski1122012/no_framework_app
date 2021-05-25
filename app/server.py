@@ -1,5 +1,5 @@
-import socket
 import selectors
+import socket
 from types import SimpleNamespace
 
 
