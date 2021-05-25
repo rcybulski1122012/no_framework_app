@@ -1,5 +1,5 @@
 from server import Server
-from http_handling import HttpRequest, InvalidHttpRequest
+from request_parser import HttpRequest, InvalidHttpRequest
 
 
 def fake_handler(request):

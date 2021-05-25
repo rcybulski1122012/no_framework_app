@@ -1,5 +1,5 @@
 import pytest
-from app.http_handling import HttpRequest, InvalidHttpRequest
+from app.request_parser import HttpRequest, InvalidHttpRequest
 
 
 GET_request = ("GET /hello.htm HTTP/1.1\n"
