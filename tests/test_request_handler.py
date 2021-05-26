@@ -1,6 +1,6 @@
 import pytest
 
-from app.request_handler import RequestHandler
+from app.core.request_handler import RequestHandler
 
 
 @pytest.fixture

@@ -1,7 +1,7 @@
 import pytest
 
-from app.errors import Http400
-from app.request_parser import HttpRequest
+from app.core.errors import Http400
+from app.core.request_parser import HttpRequest
 
 GET_request = (
     b"GET /hello.htm HTTP/1.1\n" b"Host: www.host.com\n" b"Accept-Language: en-us\n"

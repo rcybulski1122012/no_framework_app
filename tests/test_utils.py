@@ -1,4 +1,4 @@
-from app.utils import CaseInsensitiveDict
+from app.core.utils import CaseInsensitiveDict
 
 
 def test_case_insensitive_dict():

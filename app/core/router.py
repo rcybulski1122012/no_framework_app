@@ -1,4 +1,4 @@
-from app.errors import Http404
+from app.core.errors import Http404
 
 
 class Router:

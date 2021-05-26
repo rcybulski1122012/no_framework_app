@@ -1,6 +1,6 @@
 import pytest
 
-from app.router import Router
+from app.core.router import Router
 
 
 @pytest.fixture

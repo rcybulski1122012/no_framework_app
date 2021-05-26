@@ -1,7 +1,6 @@
-from app.request_handler import RequestHandler
-from app.request_parser import HttpRequest
-from app.router import Router
-from app.server import Server
+from core.request_handler import RequestHandler
+from core.router import Router
+from core.server import Server
 
 router = Router()
 handler = RequestHandler(router=router)

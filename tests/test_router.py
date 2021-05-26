@@ -1,6 +1,6 @@
 import pytest
 
-from app.errors import Http404
+from app.core.errors import Http404
 
 
 def test_register_view(router, view):

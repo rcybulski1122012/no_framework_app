@@ -1,5 +1,5 @@
-from app.errors import Http400
-from app.utils import CaseInsensitiveDict
+from app.core.errors import Http400
+from app.core.utils import CaseInsensitiveDict
 
 
 class HttpRequest:

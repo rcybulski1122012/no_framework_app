@@ -1,5 +1,5 @@
-from app.errors import Http400, Http404
-from app.request_parser import HttpRequest
+from app.core.errors import Http400, Http404
+from app.core.request_parser import HttpRequest
 
 
 class RequestHandler:
