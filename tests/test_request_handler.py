@@ -15,7 +15,7 @@ def get_request(path):
 
 
 def test_handle_request(handler):
-    expected = b"HTTP/1.1 200 OK\n\nTest view"
+    expected = b"HTTP/1.1 200 OK\n\nTest view\n"
     request = get_request("/test")
     assert handler(request) == expected
 
