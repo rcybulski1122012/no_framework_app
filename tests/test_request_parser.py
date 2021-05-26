@@ -55,6 +55,6 @@ def test_HttpRequest_POST_request(element, expected):
 
 
 def test_HttpRequest_raises_exception_when_bad_request():
-    request_str = b"BAD REQUEST"
+    request = b"BAD REQUEST"
     with pytest.raises(Http400):
-        HttpRequest(request_str)
+        HttpRequest(request)

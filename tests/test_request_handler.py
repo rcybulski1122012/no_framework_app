@@ -1,5 +1,6 @@
 import pytest
 
+
 from app.core.request_handler import RequestHandler
 
 
@@ -20,11 +21,22 @@ def test_handle_request(handler):
 
 
 def test_returns_400_when_bad_request(handler):
-    expected = b"HTTP/1.1 400 BAD REQUEST\n"
+    expected = b"HTTP/1.1 400 Bad Request\n"
     assert handler(b"BAD REQUEST") == expected
 
 
 def test_returns_404_when_invalid_path(handler):
-    expected = b"HTTP/1.1 404 NOT FOUND\n"
+    expected = b"HTTP/1.1 404 Not Found\n"
     request = get_request("/invalid/path")
+    assert handler(request) == expected
+
+
+def test_returns_500_when_unexpected_error(handler, monkeypatch):
+    def stub(self, request):
+        assert False
+
+    expected = b"HTTP/1.1 500 Internal Server Error\n"
+    request = get_request("/test")
+    monkeypatch.setattr(handler, "_handle_request", stub)
+
     assert handler(request) == expected

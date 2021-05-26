@@ -10,8 +10,7 @@ class HttpRequest:
         self.headers = CaseInsensitiveDict()
         self.body = ""
 
-        request_string = request_string.replace(b"\r", b"")
-        request_string = request_string.decode("utf-8")
+        request_string = request_string.replace(b"\r", b"").decode("utf-8")
         self.request_string = request_string.strip()
 
         try:
@@ -35,9 +34,8 @@ class HttpRequest:
 
         headers_strings = request_string[1:end_of_headers]
         for header_string in headers_strings:
-            colon_index = header_string.index(":")
-            key, value = header_string[:colon_index], header_string[colon_index + 2 :]
-            self.headers[key] = value
+            header, value = [string.strip() for string in header_string.split(":", 1)]
+            self.headers[header] = value
 
     def _parse_body(self, request_string):
         request_string = request_string.split("\n")

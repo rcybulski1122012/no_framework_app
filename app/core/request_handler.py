@@ -10,15 +10,18 @@ class RequestHandler:
         try:
             request = HttpRequest(request)
         except Http400:
-            return b"HTTP/1.1 400 BAD REQUEST\n"
+            return b"HTTP/1.1 400 Bad Request\n"
 
-        return self._handle_request(request)
+        try:
+            return self._handle_request(request)
+        except Exception:
+            return b"HTTP/1.1 500 Internal Server Error\n"
 
     def _handle_request(self, request):
         try:
             view = self.router.route(request.path)
         except Http404:
-            return f"{request.version} 404 NOT FOUND\n".encode("utf-8")
+            return f"{request.version} 404 Not Found\n".encode("utf-8")
 
         response = view(request)
         http_response = f"{request.version} 200 OK\n\n{response}"
