@@ -9,12 +9,14 @@ class HttpRequest:
         self.version = ""
         self.headers = CaseInsensitiveDict()
         self.body = ""
+        self.params = {}
 
         request_string = request_string.replace(b"\r", b"").decode("utf-8")
         self.request_string = request_string.strip()
 
         try:
             self._parse_request_line(self.request_string)
+            self._parse_GET_arguments()
             self._parse_headers(self.request_string)
             self._parse_body(self.request_string)
         except Exception:
@@ -23,6 +25,15 @@ class HttpRequest:
     def _parse_request_line(self, request_string):
         request_line = request_string.split("\n")[0]
         self.method, self.path, self.version = request_line.split()
+
+    def _parse_GET_arguments(self):
+        try:
+            self.path, args = self.path.split("?", 1)
+            for arg in args.split("&"):
+                name, value = arg.split("=")
+                self.params[name] = value
+        except ValueError:
+            pass
 
     def _parse_headers(self, request_string):
         request_string = request_string.split("\n")

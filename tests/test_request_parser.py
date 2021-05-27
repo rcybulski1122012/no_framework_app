@@ -4,7 +4,7 @@ from app.core.errors import Http400
 from app.core.request_parser import HttpRequest
 
 GET_request = (
-    b"GET /hello.htm HTTP/1.1\n" b"Host: www.host.com\n" b"Accept-Language: en-us\n"
+    b"GET /hello.htm?first=1&second=2 HTTP/1.1\n" b"Host: www.host.com\n" b"Accept-Language: en-us\n"
 )
 
 POST_request = (
@@ -20,6 +20,7 @@ POST_request = (
 GET_request_test_data = [
     ("method", "GET"),
     ("path", "/hello.htm"),
+    ("params", {"first": "1", "second": "2"}),
     ("version", "HTTP/1.1"),
     ("headers", {"host": "www.host.com", "accept-language": "en-us"}),
     ("body", ""),
@@ -28,6 +29,7 @@ GET_request_test_data = [
 POST_request_test_data = [
     ("method", "POST"),
     ("path", "/cgi-bin/process.cgi"),
+    ("params", {}),
     ("version", "HTTP/1.1"),
     (
         "headers",
