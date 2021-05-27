@@ -15,7 +15,8 @@ class RequestHandler:
 
         try:
             return self._handle_request(request)
-        except Exception:
+        except Exception as e:
+            print(f"[ERROR]:{e}")
             return HttpResponse("HTTP/1.1", 500, "Internal Server Error").get_response()
 
     def _handle_request(self, request):
