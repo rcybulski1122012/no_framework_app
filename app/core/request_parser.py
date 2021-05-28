@@ -1,4 +1,3 @@
-import re
 from app.core.errors import Http400
 from app.core.utils import CaseInsensitiveDict
 
@@ -13,34 +12,47 @@ class HttpRequest:
         self.params = {}
 
         request_string = request_string.replace(b"\r", b"").decode("utf-8")
+        self.request_string = request_string.strip()
 
         try:
-            self._parse(request_string)
+            self._parse_request_line(self.request_string)
+            self._parse_GET_arguments()
+            self._parse_headers(self.request_string)
+            self._parse_body(self.request_string)
         except Exception:
             raise Http400
 
-    def _parse(self, request_string):
-        pattern = re.compile(r"([a-zA-z]*) (/[a-zA-Z0-9.-/?&=]*) (HTTP/\d.\d)\n"
-                             r"((.+\s*:\s*.+\s*\n)*)"
-                             r"\n*([.\n]*)")
+    def _parse_request_line(self, request_string):
+        request_line = request_string.split("\n")[0]
+        self.method, self.path, self.version = request_line.split()
 
-        match = pattern.match(request_string)
-        self.method, path, self.version, headers_string, _, self.body = match.groups()
-        self._parse_path(path)
-        self._parse_headers(headers_string)
-
-    def _parse_path(self, path):
+    def _parse_GET_arguments(self):
         try:
-            self.path, params = path.split("?", 1)
+            self.path, args = self.path.split("?", 1)
+            for arg in args.split("&"):
+                name, value = arg.split("=")
+                self.params[name] = value
         except ValueError:
-            self.path = path
-        else:
-            params = params.split("&")
-            for param in params:
-                key, val = param.split("=")
-                self.params[key] = val
+            pass
 
-    def _parse_headers(self, headers_string):
-        for header in headers_string.strip().split("\n"):
-            key, val = [string.strip() for string in header.split(":", 1)]
-            self.headers[key] = val
+    def _parse_headers(self, request_string):
+        request_string = request_string.split("\n")
+
+        try:
+            end_of_headers = request_string.index("")
+        except ValueError:
+            end_of_headers = None
+
+        headers_strings = request_string[1:end_of_headers]
+        for header_string in headers_strings:
+            header, value = [string.strip() for string in header_string.split(":", 1)]
+            self.headers[header] = value
+
+    def _parse_body(self, request_string):
+        request_string = request_string.split("\n")
+        try:
+            end_of_headers = request_string.index("")
+        except ValueError:
+            pass
+        else:
+            self.body = "\n".join(request_string[end_of_headers:]).strip()
