@@ -21,11 +21,11 @@ class RequestHandler:
 
     def _handle_request(self, request):
         try:
-            view = self.router.route(request.path)
+            view, kwargs = self.router.route(request.path)
         except Http404:
             return HttpResponse(request.version, 404, "Not Found").get_response()
 
-        body = view(request)
+        body = view(request, **kwargs)
         headers = self.get_headers(body, view)
         response = HttpResponse(request.version, 200, "OK", headers, body)
         return response.get_response()

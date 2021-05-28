@@ -9,5 +9,5 @@ def router():
 
 
 @pytest.fixture
-def view():
+def view(**kwargs):
     return lambda request: "Test view"
