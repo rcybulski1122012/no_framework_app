@@ -2,20 +2,12 @@ from app.core.errors import Http404
 
 
 class Router:
-    def __init__(self):
-        self.views = {}
-
-    def register_view(self, path, MIME_type=None):
-        def wrap(func):
-            func.MIME_type = MIME_type
-            self.views[path] = func
-            return func
-
-        return wrap
+    def __init__(self, routes):
+        self.routes = routes
 
     def route(self, path):
-        for key, value in self.views.items():
-            if result := self._are_path_matching(key, path):
+        for key, value in self.routes.items():
+            if result := self._are_paths_matching(key, path):
                 are_matching, kwargs = result
                 if are_matching:
                     return value, kwargs
@@ -23,7 +15,7 @@ class Router:
         raise Http404
 
     @staticmethod
-    def _are_path_matching(route, path):
+    def _are_paths_matching(route, path):
         route, path = route.split("/"), path.split("/")
 
         if len(route) != len(path):

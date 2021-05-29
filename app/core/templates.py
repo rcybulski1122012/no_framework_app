@@ -14,4 +14,4 @@ def render_template(path, *, templates_dir=TEMPLATES_DIR, **kwargs):
             start, stop = match.span()
             template = template[:start] + value + template[stop:]
 
-    return template
+    return template, "text/html"

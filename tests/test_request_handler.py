@@ -6,7 +6,7 @@ from app.core.request_handler import RequestHandler
 
 @pytest.fixture
 def handler(router, view):
-    router.register_view("/test")(view)
+    router.routes = {"/test": view}
     return RequestHandler(router)
 
 
