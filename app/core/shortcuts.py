@@ -1,6 +1,10 @@
+from json import dumps
 import re
-
 from app.settings import TEMPLATES_DIR
+
+
+def json_response(response_dict):
+    return dumps(response_dict), "application/json"
 
 
 def render_template(path, *, templates_dir=TEMPLATES_DIR, **kwargs):

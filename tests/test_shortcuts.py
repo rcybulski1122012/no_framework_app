@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from app.core.templates import render_template
+from app.core.shortcuts import render_template, json_response
 
 
 def test_render_template(tmpdir):
@@ -33,3 +33,9 @@ def test_render_template_replaces_variables(tmpdir, variable_format):
     assert render_template(
         "file.html", templates_dir=Path(p.dirpath()), var="Variable"
     ) == ("content Variable", "text/html")
+
+
+def test_json_response():
+    result = json_response({"test": 2, "values": ["t", "e", "s", "t"]})
+    expected = '{"test": 2, "values": ["t", "e", "s", "t"]}', "application/json"
+    assert result == expected
