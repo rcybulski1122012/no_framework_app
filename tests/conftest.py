@@ -11,6 +11,3 @@ def view(**kwargs):
 @pytest.fixture
 def router():
     return Router({})
-
-
-

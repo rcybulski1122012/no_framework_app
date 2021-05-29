@@ -1,6 +1,5 @@
 import pytest
 
-
 from app.core.request_handler import RequestHandler
 
 
@@ -14,7 +13,7 @@ def get_request(path):
     return f"GET {path} HTTP/1.1\n".encode("utf-8")
 
 
-def test_handle_request(handler):
+def test_proper_request(handler):
     expected = b"HTTP/1.1 200 OK\n\nTest view\n"
     request = get_request("/test")
     assert handler(request) == expected

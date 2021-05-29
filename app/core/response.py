@@ -12,7 +12,7 @@ class HttpResponse:
     def __str__(self):
         response = f"{self.version} {self.status_code} {self.readable}\n"
         if self.headers:
-            response += self.format_headers(self.headers)
+            response += self._format_headers(self.headers)
         if self.body:
             response += f"\n{self.body}\n"
         return response
@@ -21,7 +21,7 @@ class HttpResponse:
         return str(self).encode("utf-8")
 
     @staticmethod
-    def format_headers(headers):
+    def _format_headers(headers):
         result = ""
         for header, value in headers.items():
             result += f"{header}: {value}\n"

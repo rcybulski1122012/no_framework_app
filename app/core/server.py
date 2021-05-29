@@ -70,7 +70,4 @@ class Server:
                 return True
 
             content = request.split("\n\n", 1)[1]
-            if len(content) == content_length:
-                return True
-            else:
-                return False
+            return len(content) == content_length

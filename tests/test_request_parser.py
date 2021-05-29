@@ -4,7 +4,9 @@ from app.core.errors import Http400
 from app.core.request_parser import HttpRequest
 
 GET_request = (
-    b"GET /hello.htm?first=1&second=2 HTTP/1.1\n" b"Host: www.host.com\n" b"Accept-Language: en-us\n"
+    b"GET /hello.htm?first=1&second=2 HTTP/1.1\n"
+    b"Host: www.host.com\n"
+    b"Accept-Language: en-us\n"
 )
 
 POST_request = (
@@ -44,19 +46,24 @@ POST_request_test_data = [
 ]
 
 
+def test_request_without_body_and_headers():
+    request = HttpRequest(b"GET / HTTP/1.1\n")
+    assert (request.method, request.path, request.version) == ("GET", "/", "HTTP/1.1")
+
+
 @pytest.mark.parametrize("element,expected", GET_request_test_data)
-def test_HttpRequest_GET_request(element, expected):
+def test_request_without_body(element, expected):
     request = HttpRequest(GET_request)
     assert getattr(request, element) == expected
 
 
 @pytest.mark.parametrize("element,expected", POST_request_test_data)
-def test_HttpRequest_POST_request(element, expected):
+def test_request_with_body(element, expected):
     request = HttpRequest(POST_request)
     assert getattr(request, element) == expected
 
 
-def test_HttpRequest_raises_exception_when_bad_request():
+def test_raises_exception_when_bad_request():
     request = b"BAD REQUEST"
     with pytest.raises(Http400):
         HttpRequest(request)

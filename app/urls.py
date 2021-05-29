@@ -1,5 +1,5 @@
 from app.views import *
 
 urls = {
-    "/hello/<name>": (index, "text/html"),
+    "/hello/<name>": index,
 }
