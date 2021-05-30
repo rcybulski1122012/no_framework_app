@@ -1,14 +1,3 @@
-import pytest
-
-from app.core.request_handler import RequestHandler
-
-
-@pytest.fixture
-def handler(router, view):
-    router.routes = {"/test": view}
-    return RequestHandler(router)
-
-
 def get_request(path):
     return f"GET {path} HTTP/1.1\n".encode("utf-8")
 

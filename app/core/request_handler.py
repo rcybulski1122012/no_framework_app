@@ -25,15 +25,5 @@ class RequestHandler:
         except Http404:
             return HttpResponse(request.version, 404, "Not Found").get_response()
 
-        body, MIME_type = view(request, **kwargs)
-        headers = self.get_headers(body, MIME_type)
-        response = HttpResponse(request.version, 200, "OK", headers, body)
+        response = view(request, **kwargs)
         return response.get_response()
-
-    def get_headers(self, body, MIME_type):
-        if body and MIME_type:
-            return {
-                "Content-Type": MIME_type,
-                "Content-Length": len(body),
-            }
-        return None
