@@ -1,6 +1,8 @@
 from core.request_handler import RequestHandler
 from core.router import Router
 from core.server import Server
+import core.db.db_connection
+import core.db.model
 
 from app.urls import urls
 

@@ -4,3 +4,11 @@ class Http400(Exception):
 
 class Http404(Exception):
     pass
+
+
+class MissingEnvironmentVariable(Exception):
+    pass
+
+
+class MissingRequiredArgument(Exception):
+    pass

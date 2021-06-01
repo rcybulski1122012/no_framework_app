@@ -16,7 +16,7 @@ def render_template(request, path, *, templates_dir=TEMPLATES_DIR, **kwargs):
         body = f.read()
 
     for key, value in kwargs.items():
-        pattern = re.compile(r"\{\{\s*" + key + r"\s*\}\}")
+        pattern = re.compile(r"{{\s*" + key + r"\s*}}")
         matches = pattern.finditer(body)
 
         for match in matches:
