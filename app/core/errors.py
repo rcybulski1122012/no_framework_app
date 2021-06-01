@@ -20,3 +20,7 @@ class ModelUpdateException(Exception):
 
 class ModelDeletionException(Exception):
     pass
+
+
+class InstanceNotProvided(Exception):
+    pass

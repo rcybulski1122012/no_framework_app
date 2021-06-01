@@ -29,4 +29,3 @@ def GET_request_obj():
 def handler(router, view):
     router.routes = {"/test": view}
     return RequestHandler(router)
-

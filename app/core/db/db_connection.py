@@ -1,4 +1,5 @@
 import os
+
 import psycopg2
 
 from app.core.errors import MissingEnvironmentVariable
@@ -33,4 +34,3 @@ except KeyError:
     raise MissingEnvironmentVariable("Please provide required environment variables")
 else:
     db = DBConnection(host, database, user, password)
-
