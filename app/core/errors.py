@@ -12,3 +12,11 @@ class MissingEnvironmentVariable(Exception):
 
 class MissingRequiredArgument(Exception):
     pass
+
+
+class ModelUpdateException(Exception):
+    pass
+
+
+class ModelDeletionException(Exception):
+    pass

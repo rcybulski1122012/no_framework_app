@@ -1,7 +1,7 @@
 import pytest
 
 from app.core.db.model import Field, Model
-from app.core.errors import MissingRequiredArgument
+from app.core.errors import MissingRequiredArgument, ModelUpdateException, ModelDeletionException
 
 
 @pytest.fixture
@@ -79,9 +79,19 @@ def test_field_to_sql(dummy_class):
     assert field.to_sql() == expected
 
 
-def test_model_raises_MissingRequiredArgument_exception_when_argument_not_provided(model):
+def test_model_init_raises_exception_when_argument_not_provided(model):
     with pytest.raises(MissingRequiredArgument):
         model(first=5)
+
+
+def test_model_get_fields_names():
+    class Class(Model):
+        first = Field("integer")
+        second = Field("integer")
+
+    expected = ["id_", "first", "second"]
+
+    assert Class.get_fields_names() == expected
 
 
 def test_model_dunder_init_subclass_copies_fields_attr_and_removes_foreign_fields():
@@ -89,14 +99,12 @@ def test_model_dunder_init_subclass_copies_fields_attr_and_removes_foreign_field
         first = Field("integer")
         second = Field("integer")
 
-    Class_fields_names = [field.column_name for field in Class.fields]
-    Model_fields_names = [field.column_name for field in Model.fields]
     expected_Class = ["id_", "first", "second"]
     expected_Model = ["id_"]
 
     assert Class.fields is not Model.fields
-    assert Class_fields_names == expected_Class
-    assert Model_fields_names == expected_Model
+    assert Class.get_fields_names() == expected_Class
+    assert Model.get_fields_names() == expected_Model
 
 
 def test_model_init_does_not_require_argument_when_default_is_provided():
@@ -116,3 +124,96 @@ def test_model_init_properly_assigns_value_to_field():
 
     assert instance.field == 5
 
+
+def test_model_get_table_name():
+    class Class(Model):
+        pass
+
+    assert Class.get_table_name() == "class"
+
+
+def test_model_get_insert_query_when_fields_are_not_specified():
+    class Class(Model):
+        first = Field("integer")
+        second = Field("integer")
+        third = Field("integer")
+
+    result = Class.get_insert_query()
+    expected = "INSERT INTO class (first, second, third) VALUES (%(first)s, %(second)s, %(third)s);"
+
+    assert result == expected
+
+
+def test_model_get_insert_query_when_fields_are_specified():
+    class Class(Model):
+        first = Field("integer")
+        second = Field("integer")
+        third = Field("integer")
+
+    result = Class.get_insert_query(["first", "second"])
+    expected = "INSERT INTO class (first, second) VALUES (%(first)s, %(second)s);"
+
+    assert result == expected
+
+
+def test_model_get_field_values_dict():
+    class Class(Model):
+        first = Field("integer")
+        second = Field("integer")
+        third = Field("integer")
+
+    instance = Class(first=1, second=2, third=3)
+    result = instance.get_fields_values_dict()
+    expected = {"id_": None, "first": 1, "second": 2, "third": 3}
+
+    assert result == expected
+
+
+def test_model_get_update_query_when_fields_are_not_specified():
+    class Class(Model):
+        first = Field("integer")
+        second = Field("integer")
+        third = Field("integer")
+
+    instance = Class(first=1, second=2, third=3)
+    instance.id_ = 1
+    result = instance.get_update_query()
+    expected = "UPDATE class SET first=%(first)s, second=%(second)s, third=%(third)s WHERE id_=1;"
+
+    assert result == expected
+
+
+def test_model_get_update_query_when_fields_are_specified():
+    class Class(Model):
+        first = Field("integer")
+        second = Field("integer")
+        third = Field("integer")
+
+    instance = Class(first=1, second=2, third=3)
+    instance.id_ = 1
+    result = instance.get_update_query(["first", "second"])
+    expected = "UPDATE class SET first=%(first)s, second=%(second)s WHERE id_=1;"
+
+    assert result == expected
+
+
+def test_model_get_update_query_raises_exception_when_model_instance_has_no_id():
+    class Class(Model):
+        first = Field("integer")
+        second = Field("integer")
+        third = Field("integer")
+
+    instance = Class(first=1, second=2, third=3)
+    with pytest.raises(ModelUpdateException):
+        instance.get_update_query()
+
+
+def test_model_get_delete_query_raises_exception_when_model_instance_has_no_id():
+    class Class(Model):
+        first = Field("integer")
+        second = Field("integer")
+        third = Field("integer")
+
+    instance = Class(first=1, second=2, third=3)
+    with pytest.raises(ModelDeletionException):
+        instance.get_delete_query()

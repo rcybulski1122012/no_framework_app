@@ -1,5 +1,5 @@
 from weakref import WeakKeyDictionary
-from app.core.errors import MissingRequiredArgument
+from app.core.errors import MissingRequiredArgument, ModelUpdateException, ModelDeletionException
 
 
 class Field:
@@ -61,7 +61,7 @@ class Model:
     def __init__(self, **kwargs):
         self.id_ = None
 
-        fields = self.fields[1:]
+        fields = self.fields[1:]    # remove id_
         for field in fields:
             name = field.column_name
             try:
@@ -72,14 +72,72 @@ class Model:
                 else:
                     raise MissingRequiredArgument(f"Missing required argument: '{name}'")
 
+    def get_fields_values_dict(self):
+        fields_names = self.get_fields_names()
+        result = {name: getattr(self, name) for name in fields_names}
+
+        return result
+
+    @classmethod
+    def get_fields_names(cls):
+        names = [field.column_name for field in cls.fields]
+        return names
+
+    @classmethod
+    def get_table_name(cls):
+        return cls.__name__.lower()
+
     @classmethod
     def get_create_table_query(cls):
-        fields_info = ""
-        for field in cls.fields:
-            fields_info += f"{field.to_sql()},"
-
-        fields_info = fields_info[:-1]  # remove colon at the end
-
-        query = f"CREATE TABLE IF NOT EXIST {cls.__name__} ({fields_info});"
+        fields_info = ",".join([field.to_sql() for field in cls.fields])
+        query = f"CREATE TABLE IF NOT EXIST {cls.get_table_name()} ({fields_info});"
 
         return query
+
+    @classmethod
+    def get_insert_query(cls, fields_names=None):
+        fields_names = fields_names or cls.get_fields_names()[1:]  # all except id_
+        formatted_fields_names = ', '.join(fields_names)
+        table_name = cls.get_table_name()
+        placeholders = ", ".join([f"%({name})s" for name in fields_names])
+        query = f"INSERT INTO {table_name} ({formatted_fields_names}) VALUES ({placeholders});"
+
+        return query
+
+    def get_update_query(self, fields_names=None):
+        if not self.id_:
+            raise ModelUpdateException("You can't update a record which does not exist in database")
+
+        fields_names = fields_names or self.get_fields_names()[1:]
+        formatted_fields = ", ".join([f"{name}=%({name})s" for name in fields_names])
+        table_name = self.get_table_name()
+        query = f"UPDATE {table_name} SET {formatted_fields} WHERE id_={self.id_};"
+
+        return query
+
+    def get_delete_query(self):
+        if not self.id_:
+            raise ModelDeletionException("You can't delete a record which does not exist in database")
+
+        query = f"DELETE FROM {self.get_table_name()} WHERE id_={self.id_}"
+
+        return query
+
+    @classmethod
+    def get_select_query(cls, fields_names=None, *, order_by=None, limit=None, **conditions):
+        fields_names = ", ".join(fields_names) if fields_names else "*"
+        table_name = cls.get_table_name()
+        query = f"SELECT {fields_names} FROM {table_name}"
+        if conditions:
+            query += " WHERE "
+            query += " AND ".join([f"{key}={value}" for key, value in conditions.items()])
+
+        if order_by:
+            query += f"ORDER BY {order_by} "
+
+        if limit:
+            query += f"LIMIT {limit} "
+
+        return query + ";"
+
+
