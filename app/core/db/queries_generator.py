@@ -1,11 +1,10 @@
-from app.core.db.model import Model
 from app.core.errors import (InstanceNotProvided, ModelDeletionException,
                              ModelUpdateException)
 
 
 class QueriesGenerator:
     def __init__(self, model_or_instance):
-        if isinstance(model_or_instance, Model):
+        if model_or_instance.__class__ != type:
             self.instance = model_or_instance
             self.model = model_or_instance.__class__
         else:
@@ -32,7 +31,7 @@ class QueriesGenerator:
             [self.get_field_sql_repr(field) for field in self.model.fields]
         )
         table_name = self.model.get_table_name()
-        query = f"CREATE TABLE IF NOT EXIST {table_name} ({formatted_fields});"
+        query = f"CREATE TABLE IF NOT EXISTS {table_name} ({formatted_fields});"
 
         return query
 

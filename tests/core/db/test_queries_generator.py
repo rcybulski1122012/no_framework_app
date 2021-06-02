@@ -16,7 +16,7 @@ def test_get_field_sql_repr(dummy_class, generator_model):
 def test_get_create_table_query(generator_model):
     result = generator_model.get_create_table_query()
     expected = (
-        "CREATE TABLE IF NOT EXIST testmodel "
+        "CREATE TABLE IF NOT EXISTS testmodel "
         "(id_ serial NOT NULL PRIMARY KEY, "
         "first integer, "
         "second integer, "
