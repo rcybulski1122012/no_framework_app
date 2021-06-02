@@ -26,32 +26,22 @@ def test_get_create_table_query(generator_model):
     assert result == expected
 
 
-def test_get_insert_query_when_fields_are_not_specified(generator_model):
-    result = generator_model.get_insert_query()
-    expected = "INSERT INTO testmodel (first, second, third) VALUES (%(first)s, %(second)s, %(third)s);"
-
+@pytest.mark.parametrize("kwargs, expected", [
+    ({}, "INSERT INTO testmodel (first, second, third) VALUES (%(first)s, %(second)s, %(third)s);"),
+    ({"fields_names": ["first", "second"]}, "INSERT INTO testmodel (first, second) VALUES (%(first)s, %(second)s);")
+])
+def test_get_insert_query(generator_model, kwargs, expected):
+    result = generator_model.get_insert_query(**kwargs)
     assert result == expected
 
 
-def test_get_insert_query_when_fields_are_specified(generator_model):
-    result = generator_model.get_insert_query(["first", "second"])
-    expected = "INSERT INTO testmodel (first, second) VALUES (%(first)s, %(second)s);"
-
-    assert result == expected
-
-
-def test_get_update_query_when_fields_are_not_specified(generator_instance):
+@pytest.mark.parametrize("kwargs, expected", [
+    ({}, "UPDATE testmodel SET first=%(first)s, second=%(second)s, third=%(third)s WHERE id_=1;"),
+    ({"fields_names": ["first", "second"]}, "UPDATE testmodel SET first=%(first)s, second=%(second)s WHERE id_=1;")
+])
+def test_get_update_query_when_fields_are_not_specified(generator_instance, kwargs, expected):
     generator_instance.instance.id_ = 1
-    result = generator_instance.get_update_query()
-    expected = "UPDATE testmodel SET first=%(first)s, second=%(second)s, third=%(third)s WHERE id_=1;"
-
-    assert result == expected
-
-
-def test_get_update_query_when_fields_are_specified(generator_instance):
-    generator_instance.instance.id_ = 1
-    result = generator_instance.get_update_query(["first", "second"])
-    expected = "UPDATE testmodel SET first=%(first)s, second=%(second)s WHERE id_=1;"
+    result = generator_instance.get_update_query(**kwargs)
 
     assert result == expected
 
