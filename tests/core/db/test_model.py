@@ -15,11 +15,11 @@ def test_field_dunder_set_name_add_field_to_fields_list_if_exists():
     second = Field("integer")
 
     class Mock:
-        fields = [first]
+        _fields = [first]
 
     second.__set_name__(Mock, "second")
 
-    assert Mock.fields == [first, second]
+    assert Mock._fields == [first, second]
 
 
 def test_field_dunder_set_name_creates_fields_attribute_in_owner_if_does_not_exist(
@@ -27,7 +27,7 @@ def test_field_dunder_set_name_creates_fields_attribute_in_owner_if_does_not_exi
 ):
     field.__set_name__(dummy_class, "field")
 
-    assert dummy_class.fields == [field]
+    assert dummy_class._fields == [field]
 
 
 def test_field_dunder_get_returns_field_if_instance_is_None(field):
@@ -73,7 +73,7 @@ def test_model_dunder_init_subclass_copies_fields_attr_and_removes_foreign_field
     expected_TestModel = ["id_", "first", "second", "third"]
     expected_Model = ["id_"]
 
-    assert model.fields is not Model.fields
+    assert model._fields is not Model._fields
     assert model.get_fields_names() == expected_TestModel
     assert Model.get_fields_names() == expected_Model
 

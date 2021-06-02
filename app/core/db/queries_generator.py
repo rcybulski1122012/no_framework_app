@@ -28,7 +28,7 @@ class QueriesGenerator:
 
     def get_create_table_query(self):
         formatted_fields = ", ".join(
-            [self.get_field_sql_repr(field) for field in self.model.fields]
+            [self.get_field_sql_repr(field) for field in self.model._fields]
         )
         table_name = self.model.get_table_name()
         query = f"CREATE TABLE IF NOT EXISTS {table_name} ({formatted_fields});"

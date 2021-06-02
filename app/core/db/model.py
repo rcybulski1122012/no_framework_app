@@ -17,9 +17,9 @@ class Field:
 
     def __set_name__(self, owner, name):
         try:
-            owner.fields.append(self)
+            owner._fields.append(self)
         except AttributeError:
-            owner.fields = [self]
+            owner._fields = [self]
 
         self.column_name = name
 
@@ -40,16 +40,16 @@ class Model:
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__()
-        cls.fields = cls.__base__.fields.copy()
+        cls._fields = cls.__base__._fields.copy()
 
         for key, value in cls.__dict__.items():
             if isinstance(value, Field):
-                cls.__base__.fields.remove(value)
+                cls.__base__._fields.remove(value)
 
     def __init__(self, **kwargs):
         self.id_ = None
 
-        fields = self.fields[1:]  # remove id_
+        fields = self._fields[1:]  # remove id_
         for field in fields:
             name = field.column_name
             try:
@@ -76,7 +76,7 @@ class Model:
 
     @classmethod
     def get_fields_names(cls):
-        names = [field.column_name for field in cls.fields]
+        names = [field.column_name for field in cls._fields]
         return names
 
     def get_fields_values_dict(self):
