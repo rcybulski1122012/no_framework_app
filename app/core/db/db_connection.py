@@ -20,7 +20,10 @@ class DBConnection:
     def execute_query(self, query, data=None):
         with self.conn.cursor() as cur:
             cur.execute(query, data)
-            result = cur.fetchall()
+            try:
+                result = cur.fetchall()
+            except psycopg2.ProgrammingError:
+                result = None
             self.conn.commit()
 
         return result
