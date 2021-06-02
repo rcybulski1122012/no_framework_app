@@ -106,3 +106,13 @@ def test_model_get_field_values_dict(model):
     expected = {"id_": None, "first": 1, "second": 2, "third": 3}
 
     assert result == expected
+
+
+def test_model_from_query_response(model):
+    args = [1, 2, 3, 4]
+    instance = model.from_query_response(args)
+
+    assert instance.id_ == 1
+    assert instance.first == 2
+    assert instance.second == 3
+    assert instance.third == 4

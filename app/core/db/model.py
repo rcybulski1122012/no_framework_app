@@ -63,6 +63,14 @@ class Model:
                     )
 
     @classmethod
+    def from_query_response(cls, args):
+        fields_names = cls.get_fields_names()
+        kwargs = dict(zip(fields_names, args))
+        instance = cls(**kwargs)
+        instance.id_ = args[0]
+        return instance
+
+    @classmethod
     def get_table_name(cls):
         return cls.__name__.lower()
 

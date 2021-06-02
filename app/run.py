@@ -1,5 +1,3 @@
-import core.db.db_connection
-import core.db.model
 from core.request_handler import RequestHandler
 from core.router import Router
 from core.server import Server

@@ -17,12 +17,13 @@ class DBConnection:
     def __del__(self):
         self.conn.close()
 
-    def create_table_if_not_exists(self, model):
-        query = model.get_create_table_query()
-
-        with self.conn.cursor() as curs:
-            curs.execute(query)
+    def execute_query(self, query, data=None):
+        with self.conn.cursor() as cur:
+            cur.execute(query, data)
+            result = cur.fetchall()
             self.conn.commit()
+
+        return result
 
 
 try:
