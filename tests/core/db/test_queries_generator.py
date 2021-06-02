@@ -63,8 +63,23 @@ def test_get_update_query_raises_exception_when_model_instance_has_no_id(
         generator_instance.get_update_query()
 
 
-def test_model_get_delete_query_raises_exception_when_model_instance_has_no_id(
+def test_get_delete_query_raises_exception_when_model_instance_has_no_id(
     generator_instance,
 ):
     with pytest.raises(ModelDeletionException):
         generator_instance.get_delete_query()
+
+
+@pytest.mark.parametrize("kwargs, expected", [
+    ({}, "SELECT * FROM testmodel;"),
+    ({"fields_names": ["first", "third"]}, "SELECT first, third FROM testmodel;"),
+    ({"order_by": "first"}, "SELECT * FROM testmodel ORDER BY first;"),
+    ({"limit": 5}, "SELECT * FROM testmodel LIMIT 5;"),
+    ({"conditions": ["first=5", "second IN (2,3,4)"]}, "SELECT * FROM testmodel WHERE first=5 AND second IN (2,3,4);"),
+    ({"fields_names": ["first"], "order_by": "first", "limit": 2, "conditions": ["second < first"]},
+     "SELECT first FROM testmodel WHERE second < first ORDER BY first LIMIT 2;")
+])
+def test_select_query(generator_model, kwargs, expected):
+    result = generator_model.get_select_query(**kwargs)
+
+    assert result == expected

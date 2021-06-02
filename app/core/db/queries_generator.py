@@ -80,21 +80,19 @@ class QueriesGenerator:
         return query
 
     def get_select_query(
-        self, fields_names=None, *, order_by=None, limit=None, **conditions
+        self, fields_names=None, conditions=None, order_by=None, limit=None
     ):
         fields_names = ", ".join(fields_names) if fields_names else "*"
         table_name = self.model.get_table_name()
         query = f"SELECT {fields_names} FROM {table_name}"
         if conditions:
             query += " WHERE "
-            query += " AND ".join(
-                [f"{key}={value}" for key, value in conditions.items()]
-            )
+            query += " AND ".join(conditions)
 
         if order_by:
-            query += f"ORDER BY {order_by} "
+            query += f" ORDER BY {order_by}"
 
         if limit:
-            query += f"LIMIT {limit} "
+            query += f" LIMIT {limit}"
 
         return query + ";"
