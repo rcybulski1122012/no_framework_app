@@ -1,9 +1,9 @@
 import pytest
 
-from app.core.request_handler import RequestHandler
-from app.core.request_parser import HttpRequest
-from app.core.response import HttpResponse
-from app.core.router import Router
+from app.core.http.request_handler import RequestHandler
+from app.core.http.request import HttpRequest
+from app.core.http.response import HttpResponse
+from app.core.http.router import Router
 
 
 @pytest.fixture

@@ -1,6 +1,6 @@
-from core.request_handler import RequestHandler
-from core.router import Router
-from core.server import Server
+from app.core.http.request_handler import RequestHandler
+from app.core.http.router import Router
+from app.core.http.server import Server
 
 from app.urls import urls
 

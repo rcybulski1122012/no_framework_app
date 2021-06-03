@@ -1,7 +1,7 @@
 import pytest
 
 from app.core.errors import Http400
-from app.core.request_parser import HttpRequest
+from app.core.http.request import HttpRequest
 
 GET_request = (
     b"GET /hello.htm?first=1&second=2 HTTP/1.1\n"
