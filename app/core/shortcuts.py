@@ -1,7 +1,7 @@
 import re
 from json import dumps
 
-from app.core.http.response import HttpResponse
+from app.core.http import HttpResponse
 from app.settings import TEMPLATES_DIR
 
 

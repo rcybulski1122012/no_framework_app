@@ -41,4 +41,3 @@ def IN(field, values_or_query):
         formatted_values = ", ".join(map(str, values_or_query))
 
     return f"{field} IN ({formatted_values})"
-

@@ -1,4 +1,4 @@
-from app.core.db import db, Model, Field, QueriesGenerator, EQUAL
+from app.core.db import EQUAL, Field, Model, QueriesGenerator, db
 from app.core.errors import SessionDoesNotExist
 
 
@@ -9,8 +9,9 @@ class Session(Model):
     @classmethod
     def get_user_id(cls, session):
         generator = QueriesGenerator(cls)
-        query = generator.get_select_query(fields_names=["session_id"],
-                                           conditions=[EQUAL("session_id", session)])
+        query = generator.get_select_query(
+            fields_names=["session_id"], conditions=[EQUAL("session_id", session)]
+        )
         result = db.execute_query(query)[0]
         if result is None:
             raise SessionDoesNotExist()

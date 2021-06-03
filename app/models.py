@@ -1,6 +1,5 @@
-from app.core.db.model import Model
+from app.core.db import Model
 
 
 class TestUser(Model):
     username = None
-
