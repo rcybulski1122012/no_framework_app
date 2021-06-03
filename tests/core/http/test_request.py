@@ -6,6 +6,7 @@ from app.core.http.request import HttpRequest
 GET_request = (
     b"GET /hello.htm?first=1&second=2 HTTP/1.1\n"
     b"Host: www.host.com\n"
+    b"Cookies: first=1; second=2; third=3\n"
     b"Accept-Language: en-us\n"
 )
 
@@ -24,7 +25,8 @@ GET_request_test_data = [
     ("path", "/hello.htm"),
     ("params", {"first": "1", "second": "2"}),
     ("version", "HTTP/1.1"),
-    ("headers", {"host": "www.host.com", "accept-language": "en-us"}),
+    ("headers", {"host": "www.host.com", "accept-language": "en-us", "cookies": "first=1; second=2; third=3"}),
+    ("cookies", {"first": "1", "second": "2", "third": "3"}),
     ("body", ""),
 ]
 

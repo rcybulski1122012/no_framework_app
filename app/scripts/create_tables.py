@@ -1,10 +1,11 @@
 import app.models
+from app.core.http import Session
 from app.core.db.model import Model
 from app.core.db.queries_generator import QueriesGenerator
 from app.core.db.db_connection import db
 
 
-models = []
+models = [Session]
 for obj in app.models.__dict__.values():
     try:
         if issubclass(obj, Model) and obj != Model:

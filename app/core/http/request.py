@@ -10,6 +10,7 @@ class HttpRequest:
         self.headers = CaseInsensitiveDict()
         self.body = ""
         self.params = {}
+        self.cookies = {}
 
         request_string = request_string.replace(b"\r", b"").decode("utf-8")
         self.request_string = request_string.strip()
@@ -19,6 +20,7 @@ class HttpRequest:
             self._parse_GET_arguments()
             self._parse_headers()
             self._parse_body()
+            self._parse_cookies()
         except Exception:
             raise Http400
 
@@ -56,3 +58,15 @@ class HttpRequest:
             return splitted_request.index("")
         except ValueError:
             return None
+
+    def _parse_cookies(self):
+        try:
+            cookies = self.headers["cookies"]
+        except KeyError:
+            return
+
+        splitted = [string.strip() for string in cookies.split(";")]
+
+        for cookie_str in splitted:
+            key, value = cookie_str.split("=", 1)
+            self.cookies[key] = value

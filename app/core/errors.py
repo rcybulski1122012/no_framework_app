@@ -24,3 +24,7 @@ class ModelDeletionException(Exception):
 
 class InstanceNotProvided(Exception):
     pass
+
+
+class SessionDoesNotExist(Exception):
+    pass
