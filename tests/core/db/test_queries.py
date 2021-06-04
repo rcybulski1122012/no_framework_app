@@ -62,7 +62,11 @@ def test_get_delete_query():
         ),
         (
             {"table_name": "testmodel", "order_by": "first"},
-            "SELECT * FROM testmodel ORDER BY first;",
+            "SELECT * FROM testmodel ORDER BY first ASC;",
+        ),
+        (
+            {"table_name": "testmodel", "order_by": ("first", "second"), "asc": False},
+            "SELECT * FROM testmodel ORDER BY first DESC, second DESC;"
         ),
         ({"table_name": "testmodel", "limit": 5}, "SELECT * FROM testmodel LIMIT 5;"),
         (
@@ -73,7 +77,7 @@ def test_get_delete_query():
                 "order_by": "first",
                 "limit": 1,
             },
-            "SELECT first, second FROM testmodel WHERE condition ORDER BY first LIMIT 1;",
+            "SELECT first, second FROM testmodel WHERE condition ORDER BY first ASC LIMIT 1;",
         ),
     ],
 )

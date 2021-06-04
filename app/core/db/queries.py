@@ -46,7 +46,7 @@ def get_delete_query(table_name, conditions):
 
 
 def get_select_query(
-    table_name, fields_names=None, conditions=None, order_by=None, limit=None
+    table_name, fields_names=None, conditions=None, order_by=None, asc=True, limit=None
 ):
     formatted_fields_names = ", ".join(fields_names) if fields_names else "*"
     query = f"SELECT {formatted_fields_names} FROM {table_name}"
@@ -54,8 +54,13 @@ def get_select_query(
         query += " WHERE "
         query += " AND ".join(conditions)
 
-    if order_by:
-        query += f" ORDER BY {order_by}"
+    ordering = "ASC" if asc else "DESC"
+
+    if isinstance(order_by, str):
+        query += f" ORDER BY {order_by} {ordering}"
+    elif isinstance(order_by, (list, tuple)):
+        formatted = ", ".join(map(lambda x: f"{x} {ordering}", order_by))
+        query += f" ORDER BY {formatted}"
 
     if limit:
         query += f" LIMIT {limit}"
