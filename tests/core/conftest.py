@@ -1,8 +1,8 @@
 import pytest
 
 from app.core.http.request import HttpRequest
-from app.core.http.response import HttpResponse
 from app.core.http.request_handler import RequestHandler
+from app.core.http.response import HttpResponse
 from app.core.http.router import Router
 
 

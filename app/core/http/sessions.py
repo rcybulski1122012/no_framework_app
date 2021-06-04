@@ -1,6 +1,5 @@
-from app.core.db.db_connection import db
-from app.core.db.model import Model, Field
-from app.core.db.queries_generator import QueriesGenerator
+from app.core.db.model import Field, Model
+from app.core.db.queries import get_select_query
 from app.core.db.query_conditions import EQUAL
 from app.core.errors import SessionDoesNotExist
 
@@ -11,11 +10,10 @@ class Session(Model):
 
     @classmethod
     def get_user_id(cls, session):
-        generator = QueriesGenerator(cls)
-        query = generator.get_select_query(
-            fields_names=["session_id"], conditions=[EQUAL("session_id", session)]
+        query = get_select_query(
+            cls.get_table_name(), fields_names=["session_id"], conditions=[EQUAL("session_id", session)]
         )
-        result = db.execute_query(query)[0]
+        result = cls._db.execute_query(query)[0]
         if result is None:
             raise SessionDoesNotExist()
         else:

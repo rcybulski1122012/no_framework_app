@@ -1,5 +1,6 @@
 from weakref import WeakKeyDictionary
 
+from app.core.db.db_connection import db
 from app.core.errors import MissingRequiredArgument
 
 
@@ -36,6 +37,7 @@ class Field:
 
 
 class Model:
+    _db = db
     id_ = Field("serial", nullable=False, primary_key=True)
 
     def __init_subclass__(cls, **kwargs):
