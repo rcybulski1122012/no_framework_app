@@ -1,12 +1,15 @@
 from weakref import WeakKeyDictionary
 
 from app.core.db.db_connection import db
-from app.core.errors import MissingRequiredArgument
+from app.core.db.queries_generator import QueriesGenerator
+from app.core.db.query_conditions import EQUAL
+from app.core.errors import (MissingRequiredArgument, ModelDeletionException,
+                             ModelUpdateException)
 
 
 class Field:
     def __init__(
-        self, data_type, nullable=True, default=None, unique=False, primary_key=False
+        self, data_type, nullable=False, default=None, unique=False, primary_key=False
     ):
         self.data_type = data_type
         self.nullable = nullable
@@ -37,7 +40,9 @@ class Field:
 
 
 class Model:
-    _db = db
+    db = db
+    queries_generator = QueriesGenerator
+
     id_ = Field("serial", nullable=False, primary_key=True)
 
     def __init_subclass__(cls, **kwargs):
@@ -86,3 +91,50 @@ class Model:
         result = {name: getattr(self, name) for name in fields_names}
 
         return result
+
+    def save(self):
+        if self.id_ is None:
+            self._insert_new_object()
+        else:
+            self.update()
+
+    def _insert_new_object(self):
+        table_name = self.get_table_name()
+        fields_names = self.get_fields_names()
+        fields_names.remove("id_")
+        query = self.queries_generator.get_insert_query(
+            table_name, fields_names, returning="id_"
+        )
+        data = self.get_fields_values_dict()
+        self.id_ = db.execute_query(query, data)[0][0]
+
+    def update(self):
+        if self.id_ is None:
+            raise ModelUpdateException(
+                "You can't update an object which hasn't been saved in database"
+            )
+
+        table_name = self.get_table_name()
+        fields_names = self.get_fields_names()
+        fields_names.remove("id_")
+        query = self.queries_generator.get_update_query(
+            table_name, fields_names, conditions=[EQUAL("id_", self.id_)]
+        )
+        data = self.get_fields_values_dict()
+
+        self.db.execute_query(query, data)
+
+    def delete(self):
+        if self.id_ is None:
+            raise ModelDeletionException(
+                "You can't delete an object which hasn't been saved in database"
+            )
+
+        table_name = self.get_table_name()
+        fields_names = self.get_fields_names()
+        fields_names.remove("id_")
+        query = self.queries_generator.get_delete_query(
+            table_name, conditions=[EQUAL("id_", self.id_)]
+        )
+        self.db.execute_query(query)
+        self.id_ = None
