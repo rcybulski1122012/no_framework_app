@@ -1,6 +1,6 @@
 import pytest
 
-from app.core.db import Field, Model
+from app.core.db.model import Field, Model
 from app.core.errors import MissingRequiredArgument
 
 

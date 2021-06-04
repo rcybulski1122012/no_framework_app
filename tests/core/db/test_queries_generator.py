@@ -1,6 +1,6 @@
 import pytest
 
-from app.core.db import Field
+from app.core.db.model import Field
 from app.core.errors import ModelDeletionException, ModelUpdateException
 
 

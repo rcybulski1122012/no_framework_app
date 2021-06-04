@@ -1,4 +1,4 @@
-from app.core.http import HttpResponse
+from app.core.http.response import HttpResponse
 
 
 def test_dunder_str_contains_all_data():

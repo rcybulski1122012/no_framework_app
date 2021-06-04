@@ -1,4 +1,7 @@
-from app.core.db import EQUAL, Field, Model, QueriesGenerator, db
+from app.core.db.db_connection import db
+from app.core.db.model import Model, Field
+from app.core.db.queries_generator import QueriesGenerator
+from app.core.db.query_conditions import EQUAL
 from app.core.errors import SessionDoesNotExist
 
 
