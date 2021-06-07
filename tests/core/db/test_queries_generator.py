@@ -2,6 +2,7 @@ import pytest
 
 from app.core.db.model import Field
 from app.core.db.queries_generator import QueriesGenerator as q
+from app.core.errors import InvalidCondition
 
 
 def test_get_field_sql_repr(dummy_class):
@@ -42,9 +43,9 @@ def test_get_insert_query_witH_returning_given():
 
 def test_get_update_query():
     result = q.get_update_query(
-        "testmodel", ["first", "second"], ["first_condition", "second_condition"]
+        "testmodel", ["first", "second"], {"first": 5, "second": 10}
     )
-    expected = "UPDATE testmodel SET first=%(first)s, second=%(second)s WHERE first_condition AND second_condition;"
+    expected = f"UPDATE testmodel SET first=%(first)s, second=%(second)s WHERE first = %({q.CONDITION_PREFIX}first)s AND second = %({q.CONDITION_PREFIX}second)s;"
 
     assert result == expected
 
@@ -65,8 +66,8 @@ def test_get_delete_query():
             "SELECT first, second FROM testmodel;",
         ),
         (
-            {"table_name": "testmodel", "conditions": ["first", "second"]},
-            "SELECT * FROM testmodel WHERE first AND second;",
+            {"table_name": "testmodel", "conditions": {"first": 5, "second": 10}},
+            f"SELECT * FROM testmodel WHERE first = %({q.CONDITION_PREFIX}first)s AND second = %({q.CONDITION_PREFIX}second)s;",
         ),
         (
             {"table_name": "testmodel", "order_by": "first"},
@@ -81,15 +82,48 @@ def test_get_delete_query():
             {
                 "table_name": "testmodel",
                 "fields_names": ["first", "second"],
-                "conditions": ["condition"],
+                "conditions": {"condition": 5},
                 "order_by": "first",
                 "limit": 1,
             },
-            "SELECT first, second FROM testmodel WHERE condition ORDER BY first ASC LIMIT 1;",
+            f"SELECT first, second FROM testmodel WHERE condition = %({q.CONDITION_PREFIX}condition)s ORDER BY first ASC LIMIT 1;",
         ),
     ],
 )
 def test_get_select_query(kwargs, expected):
     result = q.get_select_query(**kwargs)
+
+    assert result == expected
+
+
+def test_format_conditions_placeholders_equal():
+    result = q.format_conditions_placeholders({"field": 5})
+    expected = [f"field = %({q.CONDITION_PREFIX}field)s"]
+
+    assert result == expected
+
+
+def test_format_conditions_placeholders_equal_when_condition_has_3_underscores():
+    result = q.format_conditions_placeholders({"id___gte": 5})
+    expected = [f"id_ >= %({q.CONDITION_PREFIX}id___gte)s"]
+
+    assert result == expected
+
+
+def test_format_conditions_placeholders_with_multiple_conditions():
+    result = q.format_conditions_placeholders({"first": 5, "second__lt": 10})
+    expected = [f"first = %({q.CONDITION_PREFIX}first)s", f"second < %({q.CONDITION_PREFIX}second__lt)s"]
+
+    assert result == expected
+
+
+def test_format_conditions_placeholders_when_operator_is_not_recognized():
+    with pytest.raises(InvalidCondition):
+        q.format_conditions_placeholders({"field__not-condition": 5})
+
+
+def test_create_conditions_dict_with_prefixes():
+    result = q.create_conditions_dict_with_prefixes({"first": 5, "second": 10, "third": 15})
+    expected = {f"{q.CONDITION_PREFIX}first": 5, f"{q.CONDITION_PREFIX}second": 10, f"{q.CONDITION_PREFIX}third": 15}
 
     assert result == expected

@@ -2,9 +2,7 @@ from weakref import WeakKeyDictionary
 
 from app.core.db.db_connection import db
 from app.core.db.queries_generator import QueriesGenerator
-from app.core.db.query_conditions import EQUAL
-from app.core.errors import (MissingRequiredArgument, ModelDeletionException,
-                             ModelUpdateException)
+from app.core.errors import (MissingRequiredArgument, ModelDeletionException)
 
 
 class Field:
@@ -70,7 +68,7 @@ class Model:
                     )
 
     @classmethod
-    def from_query_response(cls, args):
+    def create_from_query_response(cls, args):
         fields_names = cls.get_fields_names()
         kwargs = dict(zip(fields_names, args))
         instance = cls(**kwargs)
@@ -96,7 +94,7 @@ class Model:
         if self.id_ is None:
             self._insert_new_object()
         else:
-            self.update()
+            self._update()
 
     def _insert_new_object(self):
         table_name = self.get_table_name()
@@ -108,17 +106,12 @@ class Model:
         data = self.get_fields_values_dict()
         self.id_ = db.execute_query(query, data)[0][0]
 
-    def update(self):
-        if self.id_ is None:
-            raise ModelUpdateException(
-                "You can't update an object which hasn't been saved in database"
-            )
-
+    def _update(self):
         table_name = self.get_table_name()
         fields_names = self.get_fields_names()
         fields_names.remove("id_")
         query = self.queries_generator.get_update_query(
-            table_name, fields_names, conditions=[EQUAL("id_", self.id_)]
+            table_name, fields_names, conditions=[f"id_={self.id_}"]
         )
         data = self.get_fields_values_dict()
 
@@ -134,7 +127,33 @@ class Model:
         fields_names = self.get_fields_names()
         fields_names.remove("id_")
         query = self.queries_generator.get_delete_query(
-            table_name, conditions=[EQUAL("id_", self.id_)]
+            table_name, conditions=[f"id_={self.id_}"]
         )
         self.db.execute_query(query)
         self.id_ = None
+
+    @classmethod
+    def select(cls, order_by=None, asc=True, limit=None, **conditions):
+        """
+        Conditions work similar to django but they are limited.
+        Available conditions:
+            "gt": ">",
+            "gte": ">=",
+            "lt": "<",
+            "lte": ">",
+            "neq": "<>",
+            "like": "LIKE"
+        """
+        table_name = cls.get_table_name()
+        query = cls.queries_generator.get_select_query(table_name=table_name,
+                                                       fields_names=None,
+                                                       order_by=order_by,
+                                                       asc=asc,
+                                                       limit=limit,
+                                                       conditions=conditions)
+
+        prefixed_conditions = cls.queries_generator.create_conditions_dict_with_prefixes(conditions)
+        records = cls.db.execute_query(query, data=prefixed_conditions)
+        result = [cls.create_from_query_response(record) for record in records]
+
+        return result

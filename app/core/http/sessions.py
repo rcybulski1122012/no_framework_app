@@ -1,6 +1,5 @@
 from app.core.db.model import Field, Model
 from app.core.db.queries_generator import QueriesGenerator
-from app.core.db.query_conditions import EQUAL
 from app.core.errors import SessionDoesNotExist
 
 

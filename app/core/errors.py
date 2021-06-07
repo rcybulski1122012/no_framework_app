@@ -14,13 +14,13 @@ class MissingRequiredArgument(Exception):
     pass
 
 
-class ModelUpdateException(Exception):
-    pass
-
-
 class ModelDeletionException(Exception):
     pass
 
 
 class SessionDoesNotExist(Exception):
+    pass
+
+
+class InvalidCondition(Exception):
     pass
