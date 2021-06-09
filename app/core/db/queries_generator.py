@@ -2,7 +2,14 @@ from app.core.errors import InvalidCondition
 
 
 class QueriesGenerator:
-    OPERATORS = {"gt": ">", "gte": ">=", "lt": "<", "lte": ">", "neq": "<>", "like": "LIKE"}
+    OPERATORS = {
+        "gt": ">",
+        "gte": ">=",
+        "lt": "<",
+        "lte": ">",
+        "neq": "<>",
+        "like": "LIKE",
+    }
     CONDITION_PREFIX = "c_"
 
     @staticmethod
@@ -43,16 +50,20 @@ class QueriesGenerator:
     @classmethod
     def get_update_query(cls, table_name, fields_names, conditions):
         formatted_fields = ", ".join([f"{name}=%({name})s" for name in fields_names])
-        formatted_conditions = " AND ".join(cls.format_conditions_placeholders(conditions))
+        formatted_conditions = " AND ".join(
+            cls.format_conditions_placeholders(conditions)
+        )
         query = (
             f"UPDATE {table_name} SET {formatted_fields} WHERE {formatted_conditions};"
         )
 
         return query
 
-    @staticmethod
-    def get_delete_query(table_name, conditions):
-        formatted_conditions = " AND ".join(conditions)
+    @classmethod
+    def get_delete_query(cls, table_name, conditions):
+        formatted_conditions = " AND ".join(
+            cls.format_conditions_placeholders(conditions)
+        )
         query = f"DELETE FROM {table_name} WHERE {formatted_conditions};"
 
         return query
@@ -105,7 +116,9 @@ class QueriesGenerator:
                 operator, field_name = reversed_key.split("__", 1)
                 field_name, operator = field_name[::-1], operator[::-1]
                 operator = cls.OPERATORS[operator]
-                result.append(f"{field_name} {operator} %({cls.CONDITION_PREFIX}{key})s")
+                result.append(
+                    f"{field_name} {operator} %({cls.CONDITION_PREFIX}{key})s"
+                )
             except ValueError:
                 result.append(f"{key} = %({cls.CONDITION_PREFIX}{key})s")
             except KeyError:
@@ -121,5 +134,3 @@ class QueriesGenerator:
             result[prefixed_key] = value
 
         return result
-
-

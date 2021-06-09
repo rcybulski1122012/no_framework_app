@@ -2,7 +2,7 @@ from weakref import WeakKeyDictionary
 
 from app.core.db.db_connection import db
 from app.core.db.queries_generator import QueriesGenerator
-from app.core.errors import (MissingRequiredArgument, ModelDeletionException)
+from app.core.errors import MissingRequiredArgument, ModelDeletionException
 
 
 class Field:
@@ -67,6 +67,16 @@ class Model:
                         f"Missing required argument: '{name}'"
                     )
 
+    def __repr__(self):
+        name = self.__class__.__name__
+        fields = [field for field in self._fields if field.column_name != "id_"]
+        fields_repr = [
+            f"{field.column_name}={getattr(self, field.column_name)}"
+            for field in fields
+        ]
+        joined_fields_repr = ", ".join(fields_repr)
+        return f"{name}({joined_fields_repr})"
+
     @classmethod
     def create_from_query_response(cls, args):
         fields_names = cls.get_fields_names()
@@ -90,6 +100,15 @@ class Model:
 
         return result
 
+    @classmethod
+    def create_table(cls):
+        table_name = cls.get_table_name()
+        fields_repr = [
+            cls.queries_generator.get_field_sql_repr(field) for field in cls._fields
+        ]
+        query = cls.queries_generator.get_create_table_query(table_name, fields_repr)
+        cls.db.execute_query(query)
+
     def save(self):
         if self.id_ is None:
             self._insert_new_object()
@@ -104,18 +123,24 @@ class Model:
             table_name, fields_names, returning="id_"
         )
         data = self.get_fields_values_dict()
-        self.id_ = db.execute_query(query, data)[0][0]
+        del data["id_"]  # TODO: refactor it
+        self.id_ = self.db.execute_query(query, data)[0][0]
 
     def _update(self):
         table_name = self.get_table_name()
         fields_names = self.get_fields_names()
         fields_names.remove("id_")
+        conditions = {"id_": self.id_}
         query = self.queries_generator.get_update_query(
-            table_name, fields_names, conditions=[f"id_={self.id_}"]
+            table_name, fields_names, conditions=conditions
         )
         data = self.get_fields_values_dict()
+        conditions = self.queries_generator.create_conditions_dict_with_prefixes(
+            conditions
+        )
+        data.update(conditions)
 
-        self.db.execute_query(query, data)
+        self.db.execute_query(query, data=data)
 
     def delete(self):
         if self.id_ is None:
@@ -126,10 +151,14 @@ class Model:
         table_name = self.get_table_name()
         fields_names = self.get_fields_names()
         fields_names.remove("id_")
+        conditions = {"id_": self.id_}
         query = self.queries_generator.get_delete_query(
-            table_name, conditions=[f"id_={self.id_}"]
+            table_name, conditions=conditions
         )
-        self.db.execute_query(query)
+        conditions = self.queries_generator.create_conditions_dict_with_prefixes(
+            conditions
+        )
+        self.db.execute_query(query, data=conditions)
         self.id_ = None
 
     @classmethod
@@ -145,14 +174,18 @@ class Model:
             "like": "LIKE"
         """
         table_name = cls.get_table_name()
-        query = cls.queries_generator.get_select_query(table_name=table_name,
-                                                       fields_names=None,
-                                                       order_by=order_by,
-                                                       asc=asc,
-                                                       limit=limit,
-                                                       conditions=conditions)
+        query = cls.queries_generator.get_select_query(
+            table_name=table_name,
+            fields_names=None,
+            order_by=order_by,
+            asc=asc,
+            limit=limit,
+            conditions=conditions,
+        )
 
-        prefixed_conditions = cls.queries_generator.create_conditions_dict_with_prefixes(conditions)
+        prefixed_conditions = (
+            cls.queries_generator.create_conditions_dict_with_prefixes(conditions)
+        )
         records = cls.db.execute_query(query, data=prefixed_conditions)
         result = [cls.create_from_query_response(record) for record in records]
 

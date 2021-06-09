@@ -51,8 +51,8 @@ def test_get_update_query():
 
 
 def test_get_delete_query():
-    result = q.get_delete_query("testmodel", ["first_condition", "second_condition"])
-    expected = "DELETE FROM testmodel WHERE first_condition AND second_condition;"
+    result = q.get_delete_query("testmodel", {"first": 5, "second": 10})
+    expected = f"DELETE FROM testmodel WHERE first = %({q.CONDITION_PREFIX}first)s AND second = %({q.CONDITION_PREFIX}second)s;"
 
     assert result == expected
 
@@ -112,7 +112,10 @@ def test_format_conditions_placeholders_equal_when_condition_has_3_underscores()
 
 def test_format_conditions_placeholders_with_multiple_conditions():
     result = q.format_conditions_placeholders({"first": 5, "second__lt": 10})
-    expected = [f"first = %({q.CONDITION_PREFIX}first)s", f"second < %({q.CONDITION_PREFIX}second__lt)s"]
+    expected = [
+        f"first = %({q.CONDITION_PREFIX}first)s",
+        f"second < %({q.CONDITION_PREFIX}second__lt)s",
+    ]
 
     assert result == expected
 
@@ -123,7 +126,13 @@ def test_format_conditions_placeholders_when_operator_is_not_recognized():
 
 
 def test_create_conditions_dict_with_prefixes():
-    result = q.create_conditions_dict_with_prefixes({"first": 5, "second": 10, "third": 15})
-    expected = {f"{q.CONDITION_PREFIX}first": 5, f"{q.CONDITION_PREFIX}second": 10, f"{q.CONDITION_PREFIX}third": 15}
+    result = q.create_conditions_dict_with_prefixes(
+        {"first": 5, "second": 10, "third": 15}
+    )
+    expected = {
+        f"{q.CONDITION_PREFIX}first": 5,
+        f"{q.CONDITION_PREFIX}second": 10,
+        f"{q.CONDITION_PREFIX}third": 15,
+    }
 
     assert result == expected
