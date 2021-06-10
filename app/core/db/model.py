@@ -69,11 +69,8 @@ class Model:
 
     def __repr__(self):
         name = self.__class__.__name__
-        fields = [field for field in self._fields if field.column_name != "id_"]
-        fields_repr = [
-            f"{field.column_name}={getattr(self, field.column_name)}"
-            for field in fields
-        ]
+        fields_names = self.get_fields_names(exclude=("id_",))
+        fields_repr = [f"{name}={getattr(self, name)}" for name in fields_names]
         joined_fields_repr = ", ".join(fields_repr)
         return f"{name}({joined_fields_repr})"
 
@@ -90,12 +87,16 @@ class Model:
         return cls.__name__.lower()
 
     @classmethod
-    def get_fields_names(cls):
-        names = [field.column_name for field in cls._fields]
+    def get_fields_names(cls, exclude=tuple()):
+        names = [
+            field.column_name
+            for field in cls._fields
+            if field.column_name not in exclude
+        ]
         return names
 
-    def get_fields_values_dict(self):
-        fields_names = self.get_fields_names()
+    def get_fields_values_dict(self, exclude=tuple()):
+        fields_names = self.get_fields_names(exclude=exclude)
         result = {name: getattr(self, name) for name in fields_names}
 
         return result
@@ -117,19 +118,16 @@ class Model:
 
     def _insert_new_object(self):
         table_name = self.get_table_name()
-        fields_names = self.get_fields_names()
-        fields_names.remove("id_")
+        fields_names = self.get_fields_names(exclude=("id_",))
         query = self.queries_generator.get_insert_query(
             table_name, fields_names, returning="id_"
         )
         data = self.get_fields_values_dict()
-        del data["id_"]
         self.id_ = self.db.execute_query(query, data)[0][0]
 
     def _update(self):
         table_name = self.get_table_name()
-        fields_names = self.get_fields_names()
-        fields_names.remove("id_")
+        fields_names = self.get_fields_names(exclude=("id_",))
         conditions = {"id_": self.id_}
         query = self.queries_generator.get_update_query(
             table_name, fields_names, conditions=conditions
@@ -149,8 +147,6 @@ class Model:
             )
 
         table_name = self.get_table_name()
-        fields_names = self.get_fields_names()
-        fields_names.remove("id_")
         conditions = {"id_": self.id_}
         query = self.queries_generator.get_delete_query(
             table_name, conditions=conditions

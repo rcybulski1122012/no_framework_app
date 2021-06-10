@@ -1,13 +1,14 @@
-from pathlib import Path
 import uuid
+from pathlib import Path
 
 import pytest
 
 from app.core.errors import SessionDoesNotExist
-from app.scripts.install_extensions import install_extensions
 from app.core.http.request import HttpRequest
 from app.core.http.sessions import Session
-from app.core.shortcuts import json_response, render_template, get_current_session
+from app.core.shortcuts import (get_current_session, json_response,
+                                render_template)
+from app.scripts.install_extensions import install_extensions
 
 
 def test_render_template(tmpdir, GET_request_obj):
@@ -56,7 +57,9 @@ def test_get_current_session_returns_session(db_connection):
     session = Session(data='{"user_id": 1}')
     session.save()
     session = Session.select()[0]
-    raw_request = bytes(f"GET / HTTP/1.1\nCookie: session_id={session.session_id}\n", "utf-8")
+    raw_request = bytes(
+        f"GET / HTTP/1.1\nCookie: session_id={session.session_id}\n", "utf-8"
+    )
     request = HttpRequest(raw_request)
     result = get_current_session(request)
 

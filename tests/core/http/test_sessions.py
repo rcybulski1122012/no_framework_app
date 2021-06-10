@@ -1,5 +1,6 @@
-import pytest
 from uuid import UUID
+
+import pytest
 
 from app.core.db.model import Model
 from app.core.errors import InvalidSessionData
@@ -8,14 +9,14 @@ from app.core.http.sessions import Session
 
 def test_session_dunder_init_when_json_string_given():
     session = Session(data='{"bar":["baz", null, 1.0, 2]}')
-    expected = {'bar': ['baz', None, 1.0, 2]}
+    expected = {"bar": ["baz", None, 1.0, 2]}
 
     assert session.json_data == expected
 
 
 def test_session_dunder_init_when_dict_given():
-    session = Session(data={'bar': ['baz', None, 1.0, 2]})
-    expected = {'bar': ['baz', None, 1.0, 2]}
+    session = Session(data={"bar": ["baz", None, 1.0, 2]})
+    expected = {"bar": ["baz", None, 1.0, 2]}
 
     assert session.json_data == expected
 
@@ -61,4 +62,3 @@ def test_session_dunder_init_generates_session_id_if_no_provided():
     result = session.session_id
 
     assert isinstance(result, UUID)
-

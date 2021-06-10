@@ -5,7 +5,6 @@ import psycopg2.extras
 
 from app.core.errors import MissingEnvironmentVariable
 
-
 psycopg2.extras.register_uuid()
 
 

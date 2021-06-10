@@ -1,7 +1,6 @@
-from app.settings import models_modules
 from app.core.db.model import Model
 from app.core.http.sessions import Session
-
+from app.settings import models_modules
 
 if __name__ == "__main__":
     models = [Session]

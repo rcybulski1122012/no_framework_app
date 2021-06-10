@@ -104,15 +104,28 @@ def test_model_get_fields_names(model):
     assert result == expected
 
 
-def test_model_get_field_values_dict(model):
-    instance = model(first=1, second=2, third=3)
+def test_model_get_fields_names_with_exclude(model):
+    result = model.get_fields_names(exclude=["id_"])
+    expected = ["first", "second", "third"]
+
+    assert result == expected
+
+
+def test_model_get_field_values_dict(instance):
     result = instance.get_fields_values_dict()
     expected = {"id_": None, "first": 1, "second": 2, "third": 3}
 
     assert result == expected
 
 
-def test_model_from_query_response(model):
+def test_model_get_fields_values_dict_with_exclude(instance):
+    result = instance.get_fields_values_dict(exclude=["id_"])
+    expected = {"first": 1, "second": 2, "third": 3}
+
+    assert result == expected
+
+
+def test_model_create_from_query_response(model):
     args = [1, 2, 3, 4]
     instance = model.create_from_query_response(args)
 

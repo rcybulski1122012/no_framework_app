@@ -1,5 +1,6 @@
 import json
 import uuid
+
 from app.core.db.model import Field, Model
 from app.core.errors import InvalidSessionData
 
@@ -15,14 +16,18 @@ class Session(Model):
             self.json_data = json.loads(self.data)
         except (json.decoder.JSONDecodeError, TypeError):
             if not isinstance(self.data, dict):
-                raise InvalidSessionData("Value of field 'data' must be a dictionary instance"
-                                         " or string, which can be converted into a dict")
+                raise InvalidSessionData(
+                    "Value of field 'data' must be a dictionary instance"
+                    " or string, which can be converted into a dict"
+                )
             else:
                 self.json_data = self.data
         else:
             if not isinstance(self.json_data, dict):
-                raise InvalidSessionData("Value of field 'data' must be a dictionary instance"
-                                         " or string, which can be converted into a dict")
+                raise InvalidSessionData(
+                    "Value of field 'data' must be a dictionary instance"
+                    " or string, which can be converted into a dict"
+                )
 
         if self.session_id == "uuid_generate_v4()":
             self.session_id = uuid.uuid4()

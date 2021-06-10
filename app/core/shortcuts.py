@@ -3,8 +3,8 @@ from json import dumps
 
 from app.core.errors import SessionDoesNotExist
 from app.core.http.response import HttpResponse
-from app.settings import TEMPLATES_DIR
 from app.core.http.sessions import Session
+from app.settings import TEMPLATES_DIR
 
 
 def json_response(request, response_dict):
@@ -36,5 +36,3 @@ def get_current_session(request):
         return session
     except (KeyError, IndexError):
         raise SessionDoesNotExist("Session with this user wasn't started")
-
-
