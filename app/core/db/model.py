@@ -123,7 +123,7 @@ class Model:
             table_name, fields_names, returning="id_"
         )
         data = self.get_fields_values_dict()
-        del data["id_"]  # TODO: refactor it
+        del data["id_"]
         self.id_ = self.db.execute_query(query, data)[0][0]
 
     def _update(self):

@@ -24,3 +24,7 @@ class SessionDoesNotExist(Exception):
 
 class InvalidCondition(Exception):
     pass
+
+
+class InvalidSessionData(Exception):
+    pass

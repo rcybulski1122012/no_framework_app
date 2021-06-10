@@ -1,8 +1,10 @@
 import re
 from json import dumps
 
+from app.core.errors import SessionDoesNotExist
 from app.core.http.response import HttpResponse
 from app.settings import TEMPLATES_DIR
+from app.core.http.sessions import Session
 
 
 def json_response(request, response_dict):
@@ -25,3 +27,14 @@ def render_template(request, path, *, templates_dir=TEMPLATES_DIR, **kwargs):
 
     headers = {"Content-Type": "text/html", "Content-Length": len(body)}
     return HttpResponse(request.version, 200, "OK", headers, body)
+
+
+def get_current_session(request):
+    try:
+        session_id = request.cookies["session_id"]
+        session = Session.select(session_id=session_id)[0]
+        return session
+    except (KeyError, IndexError):
+        raise SessionDoesNotExist("Session with this user wasn't started")
+
+

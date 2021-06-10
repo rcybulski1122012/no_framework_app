@@ -61,7 +61,7 @@ class HttpRequest:
 
     def _parse_cookies(self):
         try:
-            cookies = self.headers["cookies"]
+            cookies = self.headers["cookie"]
         except KeyError:
             return
 
