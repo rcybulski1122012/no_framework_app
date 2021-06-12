@@ -1,4 +1,4 @@
-from app.core.errors import Http400, Http404
+from app.core.errors import Http400, Http404, HttpException
 from app.core.http.request import HttpRequest
 from app.core.http.response import HttpResponse
 
@@ -15,6 +15,9 @@ class RequestHandler:
 
         try:
             return self._handle_request(request)
+        except HttpException as e:
+            print(e)
+            return e.get_response(request)
         except Exception as e:
             print(f"[ERROR]:{e}")
             return HttpResponse("HTTP/1.1", 500, "Internal Server Error").get_response()

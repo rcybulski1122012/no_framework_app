@@ -1,3 +1,6 @@
+from app.core.errors import Http404
+
+
 def get_request(path):
     return f"GET {path} HTTP/1.1\n".encode("utf-8")
 
@@ -20,10 +23,21 @@ def test_returns_404_when_invalid_path(handler):
 
 
 def test_returns_500_when_unexpected_error(handler, monkeypatch):
-    def stub(self, request):
+    def stub(*args, **kwargs):
         assert False
 
     expected = b"HTTP/1.1 500 Internal Server Error\n"
+    request = get_request("/test")
+    monkeypatch.setattr(handler, "_handle_request", stub)
+
+    assert handler(request) == expected
+
+
+def test_when_http_exception_raised_in_view_return_caught_exception_response(handler, monkeypatch):
+    def stub(*args, **kwargs):
+        raise Http404
+
+    expected = b"HTTP/1.1 404 Not Found\n"
     request = get_request("/test")
     monkeypatch.setattr(handler, "_handle_request", stub)
 

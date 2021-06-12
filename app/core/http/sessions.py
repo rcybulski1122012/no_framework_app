@@ -2,7 +2,7 @@ import json
 import uuid
 
 from app.core.db.model import Field, Model
-from app.core.errors import InvalidSessionData
+from app.core.errors import InvalidSessionData, SessionDoesNotExist
 
 
 class Session(Model):
@@ -41,3 +41,12 @@ class Session(Model):
     def save(self):
         self.data = json.dumps(self.json_data)
         super().save()
+
+
+def get_current_session(request):
+    try:
+        session_id = request.cookies["session_id"]
+        session = Session.select(session_id=session_id)[0]
+        return session
+    except (KeyError, IndexError):
+        raise SessionDoesNotExist("Session with this user wasn't started")

@@ -1,4 +1,3 @@
-import psycopg2
 import pytest
 
 from app.core.http.request import HttpRequest
@@ -27,25 +26,21 @@ def GET_request_obj():
 
 
 @pytest.fixture
+def POST_request_obj():
+    return HttpRequest(
+        b"POST /cgi-bin/process.cgi HTTP/1.1\n"
+        b"Host: www.host.com\n"
+        b"Content-Type: application/x-www-form-urlencoded\n"
+        b"Content-Length: length\n"
+        b"Accept-Language: en-us\n\n"
+        b"licenseID=string&content=string&/paramsXML=string\n"
+    )
+
+
+@pytest.fixture
 def handler(router, view):
     router.routes = {"/test": view}
     return RequestHandler(router)
 
 
-@pytest.fixture
-def db_connection(postgresql):
-    class PostgresDBConnection:
-        conn = postgresql
 
-        def execute_query(self, query, data=None):
-            with self.conn.cursor() as cur:
-                cur.execute(query, data)
-                try:
-                    result = cur.fetchall()
-                except psycopg2.ProgrammingError:
-                    result = None
-                self.conn.commit()
-
-            return result
-
-    return PostgresDBConnection()

@@ -1,10 +1,13 @@
+import uuid
 from uuid import UUID
 
 import pytest
 
 from app.core.db.model import Model
-from app.core.errors import InvalidSessionData
-from app.core.http.sessions import Session
+from app.core.errors import InvalidSessionData, SessionDoesNotExist
+from app.core.http.request import HttpRequest
+from app.core.http.sessions import Session, get_current_session
+from app.scripts.install_extensions import install_extensions
 
 
 def test_session_dunder_init_when_json_string_given():
@@ -62,3 +65,40 @@ def test_session_dunder_init_generates_session_id_if_no_provided():
     result = session.session_id
 
     assert isinstance(result, UUID)
+
+
+def test_get_current_session_returns_session(db_connection):
+    Session.db = db_connection
+    install_extensions(db_connection, ["uuid-ossp"])
+    Session.create_table()
+    session = Session(data='{"user_id": 1}')
+    session.save()
+    session = Session.select()[0]
+    raw_request = bytes(
+        f"GET / HTTP/1.1\nCookie: session_id={session.session_id}\n", "utf-8"
+    )
+    request = HttpRequest(raw_request)
+    result = get_current_session(request)
+
+    assert str(result) == str(session)
+
+
+def test_get_current_session_raises_exception_when_session_id_not_in_cookie():
+    raw_request = bytes(f"GET / HTTP/1.1\n", "utf-8")
+    request = HttpRequest(raw_request)
+
+    with pytest.raises(SessionDoesNotExist):
+        get_current_session(request)
+
+
+def test_get_current_session_raises_exception_when_session_not_id_db(db_connection):
+    Session.db = db_connection
+    install_extensions(db_connection, ["uuid-ossp"])
+    Session.create_table()
+    session_id = uuid.uuid4()
+
+    raw_request = bytes(f"GET / HTTP/1.1\nCookie: session_id={session_id}\n", "utf-8")
+    request = HttpRequest(raw_request)
+
+    with pytest.raises(SessionDoesNotExist):
+        get_current_session(request)
