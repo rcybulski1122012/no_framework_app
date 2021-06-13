@@ -1,9 +1,12 @@
 import json
 
+from app.auth.errors import PasswordsDoNotMatch, UserDoesNotExist
 from app.auth.models import AppUser
+from app.auth.shortcuts import authenticate
 from app.core.errors import Http400
 from app.core.http.decorators import POST_required
 from app.core.http.response import HttpResponse
+from app.core.http.sessions import Session
 from app.core.shortcuts import json_response
 
 
@@ -37,3 +40,34 @@ def _get_registration_data(request):
 
     return username, password1, password2, email
 
+
+@POST_required
+def login_user_view(request):
+    username, password = _get_login_data(request)
+
+    try:
+        user = authenticate(username, password)
+    except UserDoesNotExist:
+        response_body = {"error": "User with this username does not exist."}
+    except PasswordsDoNotMatch:
+        response_body = {"error": "Invalid password."}
+    else:
+        data = json.dumps({"user_id": user.id_})
+        session = Session(data=data)
+        session.save()
+
+        headers = {"Cookie": f"session_id={session.session_id}"}
+        return HttpResponse(request.version, 201, "Created", headers)
+
+    return json_response(request, response_body)
+
+
+def _get_login_data(request):
+    try:
+        data = json.loads(request.body)
+        username = data["username"]
+        password = data["password"]
+    except (json.decoder.JSONDecodeError, KeyError):
+        raise Http400
+
+    return username, password

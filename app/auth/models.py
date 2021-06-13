@@ -1,6 +1,6 @@
 import bcrypt
 
-from app.core.db.model import Model, Field
+from app.core.db.model import Field, Model
 
 
 class AppUser(Model):

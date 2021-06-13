@@ -1,3 +1,5 @@
+import traceback
+
 from app.core.errors import Http400, Http404, HttpException
 from app.core.http.request import HttpRequest
 from app.core.http.response import HttpResponse
@@ -20,6 +22,7 @@ class RequestHandler:
             return e.get_response(request)
         except Exception as e:
             print(f"[ERROR]:{e}")
+            traceback.print_exc()
             return HttpResponse("HTTP/1.1", 500, "Internal Server Error").get_response()
 
     def _handle_request(self, request):

@@ -1,7 +1,7 @@
 import bcrypt
 
+from app.auth.errors import PasswordsDoNotMatch, UserDoesNotExist
 from app.auth.models import AppUser
-from app.auth.errors import UserDoesNotExist, PasswordsDoNotMatch
 
 
 def authenticate(username, password):

@@ -2,8 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from app.core.shortcuts import (json_response,
-                                render_template)
+from app.core.shortcuts import json_response, render_template
 
 
 def test_render_template(tmpdir, GET_request_obj):

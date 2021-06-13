@@ -25,5 +25,3 @@ def render_template(request, path, *, templates_dir=TEMPLATES_DIR, **kwargs):
 
     headers = {"Content-Type": "text/html", "Content-Length": len(body)}
     return HttpResponse(request.version, 200, "OK", headers, body)
-
-

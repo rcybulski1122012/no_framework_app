@@ -33,7 +33,9 @@ def test_returns_500_when_unexpected_error(handler, monkeypatch):
     assert handler(request) == expected
 
 
-def test_when_http_exception_raised_in_view_return_caught_exception_response(handler, monkeypatch):
+def test_when_http_exception_raised_in_view_return_caught_exception_response(
+    handler, monkeypatch
+):
     def stub(*args, **kwargs):
         raise Http404
 
