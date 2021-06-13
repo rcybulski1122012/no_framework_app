@@ -135,6 +135,7 @@ def test_model_create_from_query_response(model):
     assert instance.third == 4
 
 
+@pytest.mark.disable_before_each_fixture
 def test_model_create_table(model):
     db_conn = model.db
     before = get_all_tables(db_conn)
