@@ -1,5 +1,5 @@
 from app.auth.models import AppUser
-from app.todolists.models import ToDoList, Task
+from app.todolists.models import Task, ToDoList
 
 
 def test_todolist_creator_property_returns_creator():
@@ -33,5 +33,3 @@ def test_task_todolist_property_returns_todolist():
     task.save()
 
     assert str(todolist) == str(task.todolist)
-
-

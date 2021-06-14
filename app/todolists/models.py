@@ -1,5 +1,5 @@
-from app.core.db.model import Model, Field
 from app.auth.models import AppUser
+from app.core.db.model import Field, Model
 
 
 class ToDoList(Model):

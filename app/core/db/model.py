@@ -62,6 +62,8 @@ class Model:
             except KeyError:
                 if field.default is not None:
                     setattr(self, name, field.default)
+                elif field.nullable is True:
+                    setattr(self, name, None)
                 else:
                     raise MissingRequiredArgument(
                         f"Missing required argument: '{name}'"
