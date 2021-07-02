@@ -1,6 +1,7 @@
 import json
 
-from app.auth.errors import PasswordsDoNotMatch, UserDoesNotExist
+from app.auth.errors import PasswordsDoNotMatch, UserDoesNotExist, TakenUsernameError, TakenEmailError, \
+    AuthenticationError
 from app.auth.models import AppUser
 from app.auth.shortcuts import authenticate
 from app.core.errors import Http400
@@ -14,18 +15,23 @@ from app.core.shortcuts import json_response
 def create_user_view(request):
     username, password1, password2, email = _get_registration_data(request)
 
-    if password1 != password2:
-        response_body = {"error": "Both passwords should be the same."}
-    elif AppUser.select(username=username):
-        response_body = {"error": "This username is taken."}
-    elif AppUser.select(email=email):
-        response_body = {"error": "An account with this email already exists."}
+    try:
+        _validate_registration_data(username, password1, password2, email)
+    except AuthenticationError as e:
+        return e.get_response(request)
     else:
         user = AppUser(username=username, password=password1, email=email)
         user.save()
         return HttpResponse(request.version, 201, "Created", {}, '{}')
 
-    return json_response(request, response_body)
+
+def _validate_registration_data(username, password1, password2, email):
+    if password1 != password2:
+        raise PasswordsDoNotMatch
+    elif AppUser.select(username=username):
+        raise TakenUsernameError
+    elif AppUser.select(email=email):
+        raise TakenEmailError
 
 
 def _get_registration_data(request):
@@ -47,17 +53,13 @@ def login_user_view(request):
 
     try:
         user = authenticate(username, password)
-    except UserDoesNotExist:
-        response_body = {"error": "User with this username does not exist."}
-    except PasswordsDoNotMatch:
-        response_body = {"error": "Invalid password."}
+    except AuthenticationError as e:
+        return e.get_response(request)
     else:
         data = json.dumps({"user_id": user.id_})
         session = Session(data=data)
         session.save()
         return json_response(request, {"session_id": str(session.session_id)}, status_code=201)
-
-    return json_response(request, response_body)
 
 
 def _get_login_data(request):

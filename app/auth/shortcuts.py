@@ -1,6 +1,6 @@
 import bcrypt
 
-from app.auth.errors import PasswordsDoNotMatch, UserDoesNotExist
+from app.auth.errors import UserDoesNotExist, InvalidPasswordError
 from app.auth.models import AppUser
 
 
@@ -16,4 +16,4 @@ def authenticate(username, password):
     if bcrypt.checkpw(bin_passwd, hashed):
         return user
     else:
-        raise PasswordsDoNotMatch("Given password does not match user password")
+        raise InvalidPasswordError("Given password does not match user password")

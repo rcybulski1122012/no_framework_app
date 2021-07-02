@@ -1,6 +1,6 @@
 import pytest
 
-from app.auth.errors import PasswordsDoNotMatch, UserDoesNotExist
+from app.auth.errors import UserDoesNotExist, InvalidPasswordError
 from app.auth.models import AppUser
 from app.auth.shortcuts import authenticate
 
@@ -25,5 +25,5 @@ def test_authenticate_raises_exception_when_passwords_do_not_match():
     user = AppUser(username=username, password=password, email="email")
     user.save()
 
-    with pytest.raises(PasswordsDoNotMatch):
+    with pytest.raises(InvalidPasswordError):
         authenticate(username, "wrong-password")
