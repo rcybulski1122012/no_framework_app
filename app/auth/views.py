@@ -23,7 +23,7 @@ def create_user_view(request):
     else:
         user = AppUser(username=username, password=password1, email=email)
         user.save()
-        return HttpResponse(request.version, 201, "Created")
+        return HttpResponse(request.version, 201, "Created", {}, '{}')
 
     return json_response(request, response_body)
 
@@ -55,9 +55,9 @@ def login_user_view(request):
         data = json.dumps({"user_id": user.id_})
         session = Session(data=data)
         session.save()
-
-        headers = {"Cookie": f"session_id={session.session_id}"}
-        return HttpResponse(request.version, 201, "Created", headers)
+        body = json.dumps({"session_id": str(session.session_id)})
+        # todo refactor json_response, optional after * parameter status code
+        return HttpResponse(request.version, 201, "Created", {"Content-Type": "application/json"}, body)
 
     return json_response(request, response_body)
 

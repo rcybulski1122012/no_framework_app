@@ -19,3 +19,13 @@ def test_route_with_variables(router, view):
 def test_route_raises_exception_when_view_is_not_registered(router):
     with pytest.raises(Http404):
         router.route("test_view")
+
+
+def test_route_returns_404_when_cant_compare_paths(router, monkeypatch):
+    def stub(*args, **kwargs):
+        raise IndexError
+
+    monkeypatch.setattr(router, "_are_paths_matching", stub)
+
+    with pytest.raises(Http404):
+        router.route("test_view")

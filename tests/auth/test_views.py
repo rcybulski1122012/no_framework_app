@@ -1,3 +1,5 @@
+import json
+
 import pytest
 
 from app.auth.models import AppUser
@@ -92,11 +94,12 @@ def test_login_user_view_creates_session_object_and_creates_cookie():
     request = json_request("POST", "/login", data)
 
     response = login_user_view(request)
+    body = json.loads(response.body)
     session = Session.select()[0]
 
     assert response.status_code == 201
     assert session["user_id"] == user.id_
-    assert f"session_id={session.session_id}" in response.headers["Cookie"]
+    assert body["session_id"] == str(session.session_id)
 
 
 def test_login_user_view_returns_error_when_user_does_not_exist():

@@ -7,9 +7,13 @@ class Router:
 
     def route(self, path):
         for key, value in self.routes.items():
-            are_matching, kwargs = self._are_paths_matching(key, path)
-            if are_matching:
-                return value, kwargs
+            try:
+                are_matching, kwargs = self._are_paths_matching(key, path)
+            except IndexError:
+                continue
+            else:
+                if are_matching:
+                    return value, kwargs
 
         raise Http404
 

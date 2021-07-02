@@ -1,0 +1,15 @@
+body {
+    background-color: #4158D0;
+}
+
+#wrapper {
+    margin: 9vh auto;
+    background-color: white;
+    width: 70%;
+    box-shadow: 1px 0px 23px -1px rgba(0,0,0,0.79);
+}
+
+#todolists-list {
+    max-height: 33vh;
+    overflow: scroll;
+}

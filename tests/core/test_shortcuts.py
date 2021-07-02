@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from app.core.shortcuts import json_response, render_template
+from app.core.shortcuts import json_response, render_static, render_template
 
 
 def test_render_template(tmpdir, GET_request_obj):
@@ -42,3 +42,18 @@ def test_json_response(GET_request_obj):
     ).body
 
     assert response_body == expected
+
+
+def test_render_static(tmpdir, GET_request_obj):
+    p = tmpdir.mkdir("files").join("file.css")
+    p.write("h2{color:red;}")
+
+    response = render_static(
+        GET_request_obj,
+        MIME_type="text/css",
+        path="file.css",
+        static_dir=Path(p.dirpath()),
+    )
+
+    assert response.body == "h2{color:red;}"
+    assert response.headers["Content-Type"] == "text/css"
