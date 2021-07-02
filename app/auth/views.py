@@ -55,9 +55,7 @@ def login_user_view(request):
         data = json.dumps({"user_id": user.id_})
         session = Session(data=data)
         session.save()
-        body = json.dumps({"session_id": str(session.session_id)})
-        # todo refactor json_response, optional after * parameter status code
-        return HttpResponse(request.version, 201, "Created", {"Content-Type": "application/json"}, body)
+        return json_response(request, {"session_id": str(session.session_id)}, status_code=201)
 
     return json_response(request, response_body)
 
