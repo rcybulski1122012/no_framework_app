@@ -8,7 +8,9 @@ class AuthenticationError(Exception):
 class UserDoesNotExist(AuthenticationError):
     @staticmethod
     def get_response(request):
-        return json_response(request, {"error": "User with this username does not exist."})
+        return json_response(
+            request, {"error": "User with this username does not exist."}
+        )
 
 
 class InvalidPasswordError(AuthenticationError):
@@ -32,4 +34,6 @@ class TakenUsernameError(AuthenticationError):
 class TakenEmailError(AuthenticationError):
     @staticmethod
     def get_response(request):
-        return json_response(request, {"error": "An account with this email already exists."})
+        return json_response(
+            request, {"error": "An account with this email already exists."}
+        )

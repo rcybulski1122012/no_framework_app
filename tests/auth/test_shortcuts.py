@@ -1,6 +1,6 @@
 import pytest
 
-from app.auth.errors import UserDoesNotExist, InvalidPasswordError
+from app.auth.errors import InvalidPasswordError, UserDoesNotExist
 from app.auth.models import AppUser
 from app.auth.shortcuts import authenticate
 

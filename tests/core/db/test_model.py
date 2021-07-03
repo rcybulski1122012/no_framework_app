@@ -135,16 +135,15 @@ def test_model_create_from_query_response(model):
     assert instance.third == 4
 
 
-@pytest.mark.disable_before_each_fixture
 def test_model_create_table(model):
     db_conn = model.db
     before = get_all_tables(db_conn)
-    assert before == []
+    assert "testmodel" not in before
 
     model.create_table()
     after = get_all_tables(db_conn)
 
-    assert after != []
+    assert "testmodel" in after
 
 
 def test_model_save_inserts_new_object_when_id_is_None(instance):
@@ -244,3 +243,24 @@ def test_model_select_conditions(model):
 
     assert len(result) == 1
     assert result[0].id_ == 1
+
+
+def test_model_create_saves_object_in_db(model):
+    model.create_table()
+    instance = model.create(first=1, second=2, third=3)
+    result = model.select(id_=instance.id_)
+
+    assert len(result) == 1
+
+
+def test_model_truncate_table(model):
+    model.create_table()
+    instance = model.create(first=1, second=2, third=3)
+    before = model.select(id_=instance.id_)
+
+    assert len(before) == 1
+
+    model.truncate_table()
+    after = model.select(id_=instance.id_)
+
+    assert len(after) == 0

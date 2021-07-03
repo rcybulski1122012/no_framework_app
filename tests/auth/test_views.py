@@ -4,7 +4,7 @@ import pytest
 
 from app.auth.models import AppUser
 from app.auth.views import create_user_view, login_user_view
-from app.core.errors import Http400
+from app.core.errors import Http400, Http405
 from app.core.http.sessions import Session
 from tests.utils import json_request
 
@@ -26,9 +26,9 @@ def test_create_user_view_creates_user_when_everything_is_ok():
 
 def test_create_user_view_returns_405_when_invalid_method():
     request = json_request("GET", "/register", {})
-    response = create_user_view(request)
 
-    assert response.status_code == 405
+    with pytest.raises(Http405):
+        create_user_view(request)
 
 
 def test_create_user_view_raises_400_when_invalid_request_data():
@@ -123,6 +123,6 @@ def test_login_user_view_returns_error_when_invalid_password():
 
 def test_login_user_view_returns_405_when_invalid_method():
     request = json_request("GET", "/login", {})
-    response = login_user_view(request)
 
-    assert response.status_code == 405
+    with pytest.raises(Http405):
+        login_user_view(request)

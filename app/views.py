@@ -1,8 +1,7 @@
-from app.core.errors import SessionDoesNotExist
+from app.core.errors import Http404, SessionDoesNotExist
 from app.core.http.sessions import get_current_session
-from app.core.shortcuts import render_template, render_static
-
-STATIC_MIME_TYPES = {"css": "text/css", "js": "text/javascript"}
+from app.core.shortcuts import render_static, render_template
+from app.settings import ACCEPTED_STATIC_MIME_TYPES
 
 
 def index(request):
@@ -14,7 +13,11 @@ def index(request):
         return render_template(request, "index.html")
 
 
-def static(request, file_name,):
-    file_type = file_name.split(".", 1)[1]
-    MIME_type = STATIC_MIME_TYPES[file_type]
+def static(request, file_name):
+    try:
+        file_type = file_name.split(".", 1)[1]
+        MIME_type = ACCEPTED_STATIC_MIME_TYPES[file_type]
+    except (IndexError, KeyError):
+        raise Http404
+
     return render_static(request, MIME_type, file_name)

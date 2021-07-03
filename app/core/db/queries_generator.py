@@ -134,3 +134,7 @@ class QueriesGenerator:
             result[prefixed_key] = value
 
         return result
+
+    @classmethod
+    def get_truncate_table_query(cls, table_name):
+        return f"TRUNCATE {table_name};"

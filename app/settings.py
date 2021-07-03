@@ -15,3 +15,5 @@ models_modules = [
     app.core.http.sessions,
     app.todolists.models,
 ]
+
+ACCEPTED_STATIC_MIME_TYPES = {"css": "text/css", "js": "text/javascript"}

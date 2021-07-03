@@ -11,10 +11,22 @@ class Http400(HttpException):
         return HttpResponse(request.version, 400, "Bad Request").get_response()
 
 
+class Http403(HttpException):
+    @staticmethod
+    def get_response(request):
+        return HttpResponse(request.version, 403, "Forbidden")
+
+
 class Http404(HttpException):
     @staticmethod
     def get_response(request):
         return HttpResponse(request.version, 404, "Not Found").get_response()
+
+
+class Http405(HttpException):
+    @staticmethod
+    def get_response(request):
+        return HttpResponse(request.version, 405, "Method Not Allowed")
 
 
 class MissingEnvironmentVariable(Exception):

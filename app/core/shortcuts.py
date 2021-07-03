@@ -1,12 +1,12 @@
+import json
 import re
-from json import dumps
 
 from app.core.http.response import HttpResponse
 from app.settings import STATIC_DIR, TEMPLATES_DIR
 
 
 def json_response(request, response_dict, *, status_code=200):
-    body = dumps(response_dict)
+    body = json.dumps(response_dict)
     headers = {"Content-Type": "application/json", "Content-Length": len(body)}
     return HttpResponse(request.version, status_code, "OK", headers, body)
 

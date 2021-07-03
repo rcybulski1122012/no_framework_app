@@ -136,3 +136,10 @@ def test_create_conditions_dict_with_prefixes():
     }
 
     assert result == expected
+
+
+def test_truncate_table_query():
+    query = q.get_truncate_table_query("table_name")
+    expected = "TRUNCATE table_name;"
+
+    assert query == expected

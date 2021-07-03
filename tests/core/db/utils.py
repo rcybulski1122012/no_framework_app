@@ -4,4 +4,4 @@ def get_all_tables(db_conn):
     )
     result = db_conn.execute_query(query)
 
-    return result
+    return [item[0] for item in result]

@@ -1,17 +1,17 @@
 import json
 
-from app.auth.errors import PasswordsDoNotMatch, UserDoesNotExist, TakenUsernameError, TakenEmailError, \
-    AuthenticationError
+from app.auth.errors import (AuthenticationError, PasswordsDoNotMatch,
+                             TakenEmailError, TakenUsernameError)
 from app.auth.models import AppUser
 from app.auth.shortcuts import authenticate
 from app.core.errors import Http400
-from app.core.http.decorators import POST_required
+from app.core.http.decorators import http_method_required
 from app.core.http.response import HttpResponse
 from app.core.http.sessions import Session
 from app.core.shortcuts import json_response
 
 
-@POST_required
+@http_method_required("POST")
 def create_user_view(request):
     username, password1, password2, email = _get_registration_data(request)
 
@@ -22,7 +22,7 @@ def create_user_view(request):
     else:
         user = AppUser(username=username, password=password1, email=email)
         user.save()
-        return HttpResponse(request.version, 201, "Created", {}, '{}')
+        return HttpResponse(request.version, 201, "Created", {}, "{}")
 
 
 def _validate_registration_data(username, password1, password2, email):
@@ -47,7 +47,7 @@ def _get_registration_data(request):
     return username, password1, password2, email
 
 
-@POST_required
+@http_method_required("POST")
 def login_user_view(request):
     username, password = _get_login_data(request)
 
@@ -59,7 +59,9 @@ def login_user_view(request):
         data = json.dumps({"user_id": user.id_})
         session = Session(data=data)
         session.save()
-        return json_response(request, {"session_id": str(session.session_id)}, status_code=201)
+        return json_response(
+            request, {"session_id": str(session.session_id)}, status_code=201
+        )
 
 
 def _get_login_data(request):

@@ -1,6 +1,9 @@
 import json
 
+import pytest
+
 from app.auth.models import AppUser
+from app.core.errors import Http403
 from app.core.http.request import HttpRequest
 from app.core.http.sessions import Session
 from app.todolists.models import ToDoList
@@ -40,6 +43,5 @@ def test_todolists_list_view_returns_403_when_forbidden():
     )
     request = HttpRequest(bytes(raw_request, "utf-8"))
 
-    response = todolists_list_view(request, 15)
-
-    assert response.status_code == 403
+    with pytest.raises(Http403):
+        todolists_list_view(request, 15)

@@ -1,6 +1,6 @@
 import bcrypt
 
-from app.auth.errors import UserDoesNotExist, InvalidPasswordError
+from app.auth.errors import InvalidPasswordError, UserDoesNotExist
 from app.auth.models import AppUser
 
 

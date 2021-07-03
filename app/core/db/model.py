@@ -77,6 +77,13 @@ class Model:
         return f"{name}({joined_fields_repr})"
 
     @classmethod
+    def create(cls, **kwargs):
+        instance = cls(**kwargs)
+        instance.save()
+
+        return instance
+
+    @classmethod
     def create_from_query_response(cls, args):
         fields_names = cls.get_fields_names()
         kwargs = dict(zip(fields_names, args))
@@ -110,6 +117,12 @@ class Model:
             cls.queries_generator.get_field_sql_repr(field) for field in cls._fields
         ]
         query = cls.queries_generator.get_create_table_query(table_name, fields_repr)
+        cls.db.execute_query(query)
+
+    @classmethod
+    def truncate_table(cls):
+        table_name = cls.get_table_name()
+        query = cls.queries_generator.get_truncate_table_query(table_name)
         cls.db.execute_query(query)
 
     def save(self):
