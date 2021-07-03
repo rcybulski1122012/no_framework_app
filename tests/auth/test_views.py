@@ -24,7 +24,7 @@ def test_create_user_view_creates_user_when_everything_is_ok():
     assert len(AppUser.select()) == 1
 
 
-def test_create_user_view_returns_405_when_invalid_method():
+def test_create_user_view_raises_405_when_invalid_method():
     request = json_request("GET", "/register", {})
 
     with pytest.raises(Http405):
@@ -121,7 +121,7 @@ def test_login_user_view_returns_error_when_invalid_password():
     assert "Invalid password." in response.body
 
 
-def test_login_user_view_returns_405_when_invalid_method():
+def test_login_user_view_raises_405_when_invalid_method():
     request = json_request("GET", "/login", {})
 
     with pytest.raises(Http405):

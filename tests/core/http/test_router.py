@@ -21,7 +21,7 @@ def test_route_raises_exception_when_view_is_not_registered(router):
         router.route("test_view")
 
 
-def test_route_returns_404_when_cant_compare_paths(router, monkeypatch):
+def test_route_raises_404_when_cant_compare_paths(router, monkeypatch):
     def stub(*args, **kwargs):
         raise IndexError
 

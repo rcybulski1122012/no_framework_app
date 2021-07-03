@@ -29,19 +29,18 @@ def test_todolists_list_view_returns_list_of_todolists():
     raw_request = f"GET /users/{user.id_}/todolists HTTP/1.1\nCookie: session_id={session.session_id}\n\n"
     request = HttpRequest(bytes(raw_request, "utf-8"))
 
-    response = todolists_list_view(request, user.id_)
+    response = todolists_list_view(request)
     result = json.loads(response.body)
 
     assert result == expected
 
 
-def test_todolists_list_view_returns_403_when_forbidden():
+def test_todolists_list_view_raises_403_when_forbidden():
     session = Session(data='{"user_id": 1}')
-    session.save()
     raw_request = (
         f"GET /users/1/todolists HTTP/1.1\nCookie: session_id={session.session_id}\n\n"
     )
     request = HttpRequest(bytes(raw_request, "utf-8"))
 
     with pytest.raises(Http403):
-        todolists_list_view(request, 15)
+        todolists_list_view(request)

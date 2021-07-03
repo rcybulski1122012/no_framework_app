@@ -7,5 +7,5 @@ urls = {
     "/static/<file_name>": static,
     "/register": create_user_view,
     "/login": login_user_view,
-    "/users/<user_id>/todolists": todolists_list_view,
+    "/todolists": todolists_list_view,
 }

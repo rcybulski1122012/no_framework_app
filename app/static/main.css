@@ -9,7 +9,6 @@ body {
     box-shadow: 1px 0px 23px -1px rgba(0,0,0,0.79);
 }
 
-#todolists-list {
-    max-height: 33vh;
-    overflow: scroll;
+.todolist {
+    margin: 1.3rem auto;
 }
