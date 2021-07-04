@@ -7,8 +7,7 @@ from app.auth.shortcuts import authenticate
 
 def test_authenticate_returns_user_when_everything_is_ok():
     username, password = "username", "password"
-    user = AppUser(username=username, password=password, email="email")
-    user.save()
+    user = AppUser.create(username=username, password=password, email="email")
 
     result = authenticate(username, password)
 
@@ -22,8 +21,7 @@ def test_authenticate_raises_exception_when_wrong_username():
 
 def test_authenticate_raises_exception_when_passwords_do_not_match():
     username, password = "username", "password"
-    user = AppUser(username=username, password=password, email="email")
-    user.save()
+    AppUser.create(username=username, password=password, email="email")
 
     with pytest.raises(InvalidPasswordError):
         authenticate(username, "wrong-password")

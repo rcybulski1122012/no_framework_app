@@ -190,9 +190,9 @@ def test_model_delete_raises_exception_when_model_id_is_none(instance):
 
 def test_model_select_order_by(model):
     model.create_table()
-    model(first=5, second=2, third=2).save()
-    model(first=1, second=2, third=2).save()
-    model(first=10, second=2, third=2).save()
+    model.create(first=5, second=2, third=2)
+    model.create(first=1, second=2, third=2)
+    model.create(first=10, second=2, third=2)
 
     result = model.select(order_by="first")
     reprs = [str(instance) for instance in result]
@@ -207,9 +207,9 @@ def test_model_select_order_by(model):
 
 def test_model_select_desc(model):
     model.create_table()
-    model(first=5, second=2, third=2).save()
-    model(first=1, second=2, third=2).save()
-    model(first=10, second=2, third=2).save()
+    model.create(first=5, second=2, third=2)
+    model.create(first=1, second=2, third=2)
+    model.create(first=10, second=2, third=2)
 
     result = model.select(order_by="first", asc=False)
     reprs = [str(instance) for instance in result]
@@ -224,9 +224,9 @@ def test_model_select_desc(model):
 
 def test_model_select_limit(model):
     model.create_table()
-    model(first=5, second=2, third=2).save()
-    model(first=1, second=2, third=2).save()
-    model(first=10, second=2, third=2).save()
+    model.create(first=5, second=2, third=2)
+    model.create(first=1, second=2, third=2)
+    model.create(first=10, second=2, third=2)
 
     result = model.select(limit=1)
 
@@ -235,9 +235,9 @@ def test_model_select_limit(model):
 
 def test_model_select_conditions(model):
     model.create_table()
-    model(first=5, second=2, third=2).save()
-    model(first=1, second=2, third=2).save()
-    model(first=10, second=2, third=2).save()
+    model.create(first=5, second=2, third=2)
+    model.create(first=1, second=2, third=2)
+    model.create(first=10, second=2, third=2)
 
     result = model.select(id_=1)
 

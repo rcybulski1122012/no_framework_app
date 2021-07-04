@@ -8,7 +8,7 @@ class HttpException(Exception):
 class Http400(HttpException):
     @staticmethod
     def get_response(request):
-        return HttpResponse(request.version, 400, "Bad Request").get_response()
+        return HttpResponse(request.version, 400, "Bad Request")
 
 
 class Http403(HttpException):
@@ -20,7 +20,7 @@ class Http403(HttpException):
 class Http404(HttpException):
     @staticmethod
     def get_response(request):
-        return HttpResponse(request.version, 404, "Not Found").get_response()
+        return HttpResponse(request.version, 404, "Not Found")
 
 
 class Http405(HttpException):
@@ -50,4 +50,8 @@ class InvalidCondition(Exception):
 
 
 class InvalidSessionData(Exception):
+    pass
+
+
+class InvalidRequestFormat(Exception):
     pass

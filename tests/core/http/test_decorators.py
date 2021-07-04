@@ -23,7 +23,7 @@ def test_http_method_required_does_nothing_when_given_method(view, POST_request_
     view = http_method_required("POST")(view)
     result = view(POST_request_obj)
 
-    assert result.get_response() == expected.get_response()
+    assert result.get_bytes() == expected.get_bytes()
 
 
 def test_http_method_required_raises_405_when_different_method(view, GET_request_obj):

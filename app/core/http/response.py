@@ -17,7 +17,7 @@ class HttpResponse:
             response += f"\n{self.body}\n"
         return response
 
-    def get_response(self):
+    def get_bytes(self):
         return str(self).encode("utf-8")
 
     @staticmethod

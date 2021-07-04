@@ -9,11 +9,12 @@ from app.core.http.decorators import http_method_required
 from app.core.http.response import HttpResponse
 from app.core.http.sessions import Session
 from app.core.shortcuts import json_response
+from app.core.utils import get_data_from_request_body
 
 
 @http_method_required("POST")
 def create_user_view(request):
-    username, password1, password2, email = _get_registration_data(request)
+    username, password1, password2, email = get_data_from_request_body(request, ["username", "password1", "password2", "email"])
 
     try:
         _validate_registration_data(username, password1, password2, email)
@@ -34,22 +35,9 @@ def _validate_registration_data(username, password1, password2, email):
         raise TakenEmailError
 
 
-def _get_registration_data(request):
-    try:
-        data = json.loads(request.body)
-        username = data["username"]
-        password1 = data["password1"]
-        password2 = data["password2"]
-        email = data["email"]
-    except (json.decoder.JSONDecodeError, KeyError):
-        raise Http400
-
-    return username, password1, password2, email
-
-
 @http_method_required("POST")
 def login_user_view(request):
-    username, password = _get_login_data(request)
+    username, password = get_data_from_request_body(request, ["username", "password"])
 
     try:
         user = authenticate(username, password)
@@ -62,14 +50,3 @@ def login_user_view(request):
         return json_response(
             request, {"session_id": str(session.session_id)}, status_code=201
         )
-
-
-def _get_login_data(request):
-    try:
-        data = json.loads(request.body)
-        username = data["username"]
-        password = data["password"]
-    except (json.decoder.JSONDecodeError, KeyError):
-        raise Http400
-
-    return username, password

@@ -1,4 +1,4 @@
-from app.core.errors import Http400
+from app.core.errors import InvalidRequestFormat
 from app.core.utils import CaseInsensitiveDict
 
 
@@ -22,7 +22,7 @@ class HttpRequest:
             self._parse_body()
             self._parse_cookies()
         except Exception:
-            raise Http400
+            raise InvalidRequestFormat
 
     def _parse_request_line(self):
         request_line = self.request_string.split("\n")[0]

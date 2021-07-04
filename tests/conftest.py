@@ -1,6 +1,8 @@
 import psycopg2
 import pytest
 
+from app.auth.models import AppUser
+from app.core.http.sessions import Session
 from app.core.utils import get_models_from_modules
 from app.scripts.install_extensions import install_extensions
 from app.settings import models_modules, psql_extensions
@@ -40,3 +42,10 @@ def before_each(request, db_connection):
     for model in models:
         model.db = db_connection
         model.create_table()
+
+
+@pytest.fixture
+def user_and_session():
+    user = AppUser.create(username="username", password="password", email="email")
+    session = Session.create(data={"user_id": user.id_})
+    return user, session

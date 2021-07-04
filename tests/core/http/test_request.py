@@ -1,6 +1,6 @@
 import pytest
 
-from app.core.errors import Http400
+from app.core.errors import InvalidRequestFormat
 from app.core.http.request import HttpRequest
 
 GET_request = (
@@ -74,5 +74,5 @@ def test_request_with_body(element, expected):
 
 def test_raises_exception_when_bad_request():
     request = b"BAD REQUEST"
-    with pytest.raises(Http400):
+    with pytest.raises(InvalidRequestFormat):
         HttpRequest(request)

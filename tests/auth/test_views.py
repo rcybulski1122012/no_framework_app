@@ -54,9 +54,9 @@ def test_create_user_view_returns_error_when_passwords_are_not_the_same():
 
 
 def test_create_user_view_returns_error_when_username_is_taken():
-    AppUser(
+    AppUser.create(
         username="taken_username", password="password", email="email@email.com"
-    ).save()
+    )
     data = {
         "username": "taken_username",
         "password1": "password",
@@ -71,9 +71,9 @@ def test_create_user_view_returns_error_when_username_is_taken():
 
 
 def test_create_user_view_returns_error_when_email_is_taken():
-    AppUser(
+    AppUser.create(
         username="taken_username", password="password", email="email@gmail.com"
-    ).save()
+    )
     data = {
         "username": "admin",
         "password1": "password",
@@ -88,8 +88,7 @@ def test_create_user_view_returns_error_when_email_is_taken():
 
 
 def test_login_user_view_creates_session_object_and_creates_cookie():
-    user = AppUser(username="username", password="password", email="email@gmail.com")
-    user.save()
+    user = AppUser.create(username="username", password="password", email="email@gmail.com")
     data = {"username": "username", "password": "password"}
     request = json_request("POST", "/login", data)
 
@@ -112,7 +111,7 @@ def test_login_user_view_returns_error_when_user_does_not_exist():
 
 
 def test_login_user_view_returns_error_when_invalid_password():
-    AppUser(username="username", password="password", email="email@gmail.com").save()
+    AppUser.create(username="username", password="password", email="email@gmail.com")
     data = {"username": "username", "password": "invalid-password"}
     request = json_request("POST", "/login", data)
 
