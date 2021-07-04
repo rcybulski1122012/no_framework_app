@@ -14,7 +14,9 @@ from app.core.utils import get_data_from_request_body
 
 @http_method_required("POST")
 def create_user_view(request):
-    username, password1, password2, email = get_data_from_request_body(request, ["username", "password1", "password2", "email"])
+    username, password1, password2, email = get_data_from_request_body(
+        request, ["username", "password1", "password2", "email"]
+    )
 
     try:
         _validate_registration_data(username, password1, password2, email)

@@ -1,5 +1,5 @@
 from app.auth.views import create_user_view, login_user_view
-from app.todolists.views import todolists_list_view, create_todolist_view
+from app.todolists.views import create_todolist_view, todolists_list_view
 from app.views import index, static
 
 urls = {

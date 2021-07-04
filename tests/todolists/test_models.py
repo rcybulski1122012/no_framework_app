@@ -3,7 +3,9 @@ from app.todolists.models import Task, ToDoList
 
 
 def test_todolist_creator_property_returns_creator():
-    user = AppUser.create(username="username", password="password", email="email@gmail.com")
+    user = AppUser.create(
+        username="username", password="password", email="email@gmail.com"
+    )
 
     todolist = ToDoList(name="name", creator_id=user.id_)
     todolist.save()

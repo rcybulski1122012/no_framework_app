@@ -88,7 +88,9 @@ def test_create_user_view_returns_error_when_email_is_taken():
 
 
 def test_login_user_view_creates_session_object_and_creates_cookie():
-    user = AppUser.create(username="username", password="password", email="email@gmail.com")
+    user = AppUser.create(
+        username="username", password="password", email="email@gmail.com"
+    )
     data = {"username": "username", "password": "password"}
     request = json_request("POST", "/login", data)
 

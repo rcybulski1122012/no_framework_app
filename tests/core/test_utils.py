@@ -1,8 +1,9 @@
+from unittest.mock import Mock
+
 import pytest
 
 from app.core.errors import Http400
 from app.core.utils import CaseInsensitiveDict, get_data_from_request_body
-from unittest.mock import Mock
 
 
 def test_case_insensitive_dict():

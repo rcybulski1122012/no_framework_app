@@ -26,5 +26,7 @@ def create_todolist_view(request):
         raise Http403
 
     name, description = get_data_from_request_body(request, ["name", "description"])
-    todolist = ToDoList.create(name=name, description=description, creator_id=session["user_id"])
+    todolist = ToDoList.create(
+        name=name, description=description, creator_id=session["user_id"]
+    )
     return json_response(request, todolist.get_fields_values_dict())
