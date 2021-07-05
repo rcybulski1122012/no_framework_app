@@ -4,9 +4,9 @@ from uuid import UUID
 import pytest
 
 from app.core.db.model import Model
-from app.core.errors import InvalidSessionData, SessionDoesNotExist
+from app.core.errors import Http403, InvalidSessionData
 from app.core.http.request import HttpRequest
-from app.core.http.sessions import Session, get_current_session
+from app.core.http.sessions import Session, get_current_session_or_403
 from app.scripts.install_extensions import install_extensions
 
 
@@ -78,7 +78,7 @@ def test_get_current_session_returns_session(db_connection):
         f"GET / HTTP/1.1\nCookie: session_id={session.session_id}\n", "utf-8"
     )
     request = HttpRequest(raw_request)
-    result = get_current_session(request)
+    result = get_current_session_or_403(request)
 
     assert str(result) == str(session)
 
@@ -87,8 +87,8 @@ def test_get_current_session_raises_exception_when_session_id_not_in_cookie():
     raw_request = bytes(f"GET / HTTP/1.1\n", "utf-8")
     request = HttpRequest(raw_request)
 
-    with pytest.raises(SessionDoesNotExist):
-        get_current_session(request)
+    with pytest.raises(Http403):
+        get_current_session_or_403(request)
 
 
 def test_get_current_session_raises_exception_when_session_not_id_db(db_connection):
@@ -100,5 +100,5 @@ def test_get_current_session_raises_exception_when_session_not_id_db(db_connecti
     raw_request = bytes(f"GET / HTTP/1.1\nCookie: session_id={session_id}\n", "utf-8")
     request = HttpRequest(raw_request)
 
-    with pytest.raises(SessionDoesNotExist):
-        get_current_session(request)
+    with pytest.raises(Http403):
+        get_current_session_or_403(request)

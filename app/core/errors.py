@@ -41,10 +41,6 @@ class ModelDeletionException(Exception):
     pass
 
 
-class SessionDoesNotExist(Exception):
-    pass
-
-
 class InvalidCondition(Exception):
     pass
 

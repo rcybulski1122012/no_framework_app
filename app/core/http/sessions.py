@@ -2,7 +2,7 @@ import json
 import uuid
 
 from app.core.db.model import Field, Model
-from app.core.errors import InvalidSessionData, SessionDoesNotExist
+from app.core.errors import Http403, InvalidSessionData
 
 
 class Session(Model):
@@ -43,10 +43,10 @@ class Session(Model):
         super().save()
 
 
-def get_current_session(request):
+def get_current_session_or_403(request):
     try:
         session_id = request.cookies["session_id"]
         session = Session.select(session_id=session_id)[0]
         return session
     except (KeyError, IndexError):
-        raise SessionDoesNotExist("Session with this user wasn't started")
+        raise Http403
