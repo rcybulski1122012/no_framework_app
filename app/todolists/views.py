@@ -1,3 +1,4 @@
+from app.core.http.decorators import http_method_required
 from app.core.http.sessions import get_current_session_or_403
 from app.core.shortcuts import json_response
 from app.core.utils import get_data_from_request_body
@@ -14,6 +15,7 @@ def todolists_list_view(request):
     return json_response(request, response_dict)
 
 
+@http_method_required("POST")
 def create_todolist_view(request):
     session = get_current_session_or_403(request)
 
@@ -22,3 +24,13 @@ def create_todolist_view(request):
         name=name, description=description, creator_id=session["user_id"]
     )
     return json_response(request, todolist.get_fields_values_dict())
+
+
+@http_method_required("POST")
+def delete_todolist_view(request):
+    get_current_session_or_403(request)
+    id_ = get_data_from_request_body(request, ["id_"])[0]
+    todolist = ToDoList.select(id_=id_)[0]
+    todolist.delete()
+
+    return json_response(request, {})

@@ -30,17 +30,23 @@ function createToDoListHtmlElements(data) {
 
 function createToDoListHtmlElement(el) {
     const toDoList = document.createElement("div");
+    const deleteButton = document.createElement("button");
     const h3 = document.createElement("h3");
     const p = document.createElement("p");
     const hr = document.createElement("hr");
 
     toDoList.classList.add("todolist");
     toDoList.dataset.id = el["id_"];
+    deleteButton.innerText = "Delete"
+    deleteButton.classList.add("btn", "btn-danger");
     h3.innerText = el["name"];
     p.innerText = el["description"];
 
+    deleteButton.addEventListener("click", deleteToDoList);
+
     toDoList.append(h3);
     toDoList.append(p);
+    toDoList.append(deleteButton);
     toDoList.append(hr);
     toDoListsList.append(toDoList);
 }
@@ -81,4 +87,16 @@ function sendPostRequest(path, data) {
        body: data
     };
     return fetch(path, options);
+}
+
+function deleteToDoList(e) {
+    const todolist = e.target.closest(".todolist");
+    const id_ = todolist.dataset.id;
+    data = JSON.stringify({id_: id_})
+    sendPostRequest("/delete_todolist", data)
+    .then(res => {
+        if(res.status == 200) {
+            todolist.remove();
+        }
+    });
 }
