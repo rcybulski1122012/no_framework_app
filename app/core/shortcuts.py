@@ -33,3 +33,10 @@ def render_static(request, MIME_type, path, static_dir=STATIC_DIR):
 
     headers = {"Content-Type": MIME_type, "Content-Length": len(body)}
     return HttpResponse(request.version, 200, "OK", headers, body)
+
+
+def redirect(request, path):
+    headers = {
+        "Location": path,
+    }
+    return HttpResponse(request.version, 302, "Found", headers)

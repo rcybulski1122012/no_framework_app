@@ -1,6 +1,7 @@
+from app.core.errors import Http403
 from app.core.http.decorators import http_method_required
 from app.core.http.sessions import get_current_session_or_403
-from app.core.shortcuts import json_response
+from app.core.shortcuts import json_response, render_template, redirect
 from app.core.utils import get_data_from_request_body
 from app.todolists.models import ToDoList
 
@@ -34,3 +35,17 @@ def delete_todolist_view(request):
     todolist.delete()
 
     return json_response(request, {})
+
+
+def edit_todolist_view(request, id_):
+    try:
+        session = get_current_session_or_403(request)
+    except Http403:
+        return redirect(request, "/")
+
+    todolist = ToDoList.select(id_=id_)[0]
+
+    if todolist.creator_id != session["user_id"]:
+        raise Http403
+
+    return render_template(request, "edit_todolist.html", name=todolist.name, description=todolist.description, id_=id_)

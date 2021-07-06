@@ -1,5 +1,5 @@
 const toDoListsList = document.querySelector("#todolists-list");
-const createToDoListForm = document.querySelector("#create-todolist-form")
+const createToDoListForm = document.querySelector("#create-todolist-form");
 
 createToDoListForm.addEventListener("submit", createToDoList);
 
@@ -31,6 +31,7 @@ function createToDoListHtmlElements(data) {
 function createToDoListHtmlElement(el) {
     const toDoList = document.createElement("div");
     const deleteButton = document.createElement("button");
+    const editButton = document.createElement("a");
     const h3 = document.createElement("h3");
     const p = document.createElement("p");
     const hr = document.createElement("hr");
@@ -39,6 +40,9 @@ function createToDoListHtmlElement(el) {
     toDoList.dataset.id = el["id_"];
     deleteButton.innerText = "Delete"
     deleteButton.classList.add("btn", "btn-danger");
+    editButton.innerText = "Edit"
+    editButton.classList.add("btn", "btn-info");
+    editButton.setAttribute("href", `/edit_todolist/${el["id_"]}`)
     h3.innerText = el["name"];
     p.innerText = el["description"];
 
@@ -47,6 +51,7 @@ function createToDoListHtmlElement(el) {
     toDoList.append(h3);
     toDoList.append(p);
     toDoList.append(deleteButton);
+    toDoList.append(editButton);
     toDoList.append(hr);
     toDoListsList.append(toDoList);
 }

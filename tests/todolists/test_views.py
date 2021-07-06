@@ -7,7 +7,7 @@ from app.core.errors import Http403, Http405
 from app.core.http.request import HttpRequest
 from app.todolists.models import ToDoList
 from app.todolists.views import (create_todolist_view, delete_todolist_view,
-                                 todolists_list_view)
+                                 todolists_list_view, edit_todolist_view)
 from tests.utils import json_request
 
 
@@ -120,3 +120,21 @@ def test_delete_todolist_raises_405_when_method_different_than_POST():
 
     with pytest.raises(Http405):
         delete_todolist_view(request)
+
+
+def test_edit_todolist_view_redirects_to_index_not_logged_in():
+    request = json_request("GET", "/edit_todolist/10", {})
+
+    response = edit_todolist_view(request, 10)
+
+    assert response.status_code == 302
+    assert response.headers["Location"] == "/"
+
+
+def test_edit_todolist_view_raises_403_when_forbidden(user_and_session):
+    user, session = user_and_session
+    todolist = ToDoList.create(name="name", description="description", creator_id=100)
+    request = json_request("GET", "/edit_todolist/10", {}, f"session_id={session.session_id}")
+
+    with pytest.raises(Http403):
+        edit_todolist_view(request, todolist.id_)

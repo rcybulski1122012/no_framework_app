@@ -12,3 +12,7 @@ body {
 .todolist {
     margin: 1.3rem auto;
 }
+
+.todolist button {
+    margin-right: 0.5rem;
+}
