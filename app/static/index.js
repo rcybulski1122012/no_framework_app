@@ -1,3 +1,5 @@
+import { sendRequestWithData, getDataFromForm } from "./utils.js";
+
 const toDoListsList = document.querySelector("#todolists-list");
 const createToDoListForm = document.querySelector("#create-todolist-form");
 
@@ -59,46 +61,19 @@ function createToDoListHtmlElement(el) {
 
 function createToDoList(e) {
     e.preventDefault();
-    const data = getToDoListData()
-    let statusCode = null;
+    const data = getDataFromForm(createToDoListForm, {"name": "#todolist-name", "description": "#todolist-description"})
 
-    sendPostRequest("/create_todolist", data)
-    .then(res => {
-        statusCode = res.status;
-        return res
-    })
+    sendRequestWithData("POST", "/create_todolist", data)
     .then(res => res.json())
     .then(createToDoListHtmlElement);
 
     createToDoListForm.reset();
 }
 
-function getToDoListData() {
-    const data = {
-        name: createToDoListForm.querySelector("#todolist-name").value,
-        description: createToDoListForm.querySelector("#todolist-description").value
-    }
-
-    return JSON.stringify(data)
-}
-
-function sendPostRequest(path, data) {
-    const options = {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Content-Length": data.length
-        },
-       body: data
-    };
-    return fetch(path, options);
-}
-
 function deleteToDoList(e) {
     const todolist = e.target.closest(".todolist");
-    const id_ = todolist.dataset.id;
-    data = JSON.stringify({id_: id_})
-    sendPostRequest("/delete_todolist", data)
+    const id_ = Number(todolist.dataset.id);
+    sendRequestWithData("POST", "/delete_todolist", {id_: id_})
     .then(res => {
         if(res.status == 200) {
             todolist.remove();

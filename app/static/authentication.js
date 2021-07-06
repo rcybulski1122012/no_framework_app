@@ -1,3 +1,5 @@
+import { sendRequestWithData, getDataFromForm } from "./utils.js";
+
 const loginForm = document.querySelector("#login-form");
 const registerForm = document.querySelector("#register-form");
 
@@ -7,10 +9,10 @@ registerForm.addEventListener("submit", register);
 
 function login(e) {
     e.preventDefault();
-    const data = getLoginData();
+    const data = getDataFromForm(loginForm, {"username": "#username-login", "password": "#password-login"});
     let statusCode = null;
 
-    const res = sendPostRequest("/login", data)
+    const res = sendRequestWithData("POST", "/login", data)
     .then(res => {
         statusCode = res.status;
         return res;
@@ -24,30 +26,6 @@ function login(e) {
     })
     .catch(error => console.log("Error", error));
 }
-
-
-function getLoginData() {
-    const data = {
-        username: loginForm.querySelector("#username-login").value,
-        password: loginForm.querySelector("#password-login").value
-    };
-
-    return JSON.stringify(data);
-}
-
-
-function sendPostRequest(path, data) {
-    const options = {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Content-Length": data.length
-        },
-       body: data
-    };
-    return fetch(path, options);
-}
-
 
 function successLogin(res) {
     document.cookie = "session_id=" + res["session_id"] + ";";
@@ -63,11 +41,16 @@ function failedLogin(res){
 function register(e) {
     e.preventDefault()
     clearRegisterMessagesDivs();
-    const data = getRegisterData();
+    const data = getDataFromForm(registerForm, {
+        "username": "#username-register",
+        "password1": "#password1-register",
+        "password2": "#password2-register",
+        "email": "#email-register"
+    });
     let statusCode = null;
 
 
-    sendPostRequest("/register", data)
+    sendRequestWithData("POST", "/register", data)
     .then(res => {
         statusCode = res.status;
         return res;
@@ -86,18 +69,6 @@ function register(e) {
 function clearRegisterMessagesDivs() {
     document.querySelector("#register-success").innerText = "";
     document.querySelector("#register-errors").innerText = "";
-}
-
-
-function getRegisterData() {
-    const data = {
-        username: registerForm.querySelector("#username-register").value,
-        password1: registerForm.querySelector("#password1-register").value,
-        password2: registerForm.querySelector("#password2-register").value,
-        email: registerForm.querySelector("#email-register").value,
-    };
-
-    return JSON.stringify(data);
 }
 
 
