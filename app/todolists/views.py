@@ -28,10 +28,13 @@ def create_todolist_view(request):
 
 
 @http_method_required("POST")
-def delete_todolist_view(request):
-    get_current_session_or_403(request)
-    id_ = get_data_from_request_body(request, ["id_"])[0]
+def delete_todolist_view(request, id_):
+    session = get_current_session_or_403(request)
+
     todolist = ToDoList.select(id_=id_)[0]
+    if todolist.creator_id != session["user_id"]:
+        raise Http403
+
     todolist.delete()
 
     return json_response(request, {})

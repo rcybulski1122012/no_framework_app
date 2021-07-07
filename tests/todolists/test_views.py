@@ -93,7 +93,7 @@ def test_delete_todolist_view_raises_403_when_forbidden():
     request = json_request("POST", "/delete_todolist", {}, f"session_id={session_id}")
 
     with pytest.raises(Http403):
-        delete_todolist_view(request)
+        delete_todolist_view(request, 10)
 
 
 def test_delete_todolist_view_deletes_todolist(user_and_session):
@@ -109,7 +109,7 @@ def test_delete_todolist_view_deletes_todolist(user_and_session):
     before = ToDoList.select()
     assert len(before) == 1
 
-    delete_todolist_view(request)
+    delete_todolist_view(request, todolist.id_)
 
     after = ToDoList.select()
     assert len(after) == 0
@@ -119,7 +119,14 @@ def test_delete_todolist_raises_405_when_method_different_than_POST():
     request = json_request("GET", "/delete_todolist", {})
 
     with pytest.raises(Http405):
-        delete_todolist_view(request)
+        delete_todolist_view(request, 10)
+
+
+def test_delete_todolist_raises_403_when_not_logged_in():
+    request = json_request("POST", "/delete_todolist/10", {})
+
+    with pytest.raises(Http403):
+        delete_todolist_view(request, 10)
 
 
 def test_edit_todolist_view_redirects_to_index_not_logged_in():

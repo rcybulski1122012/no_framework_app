@@ -73,7 +73,7 @@ function createToDoList(e) {
 function deleteToDoList(e) {
     const todolist = e.target.closest(".todolist");
     const id_ = Number(todolist.dataset.id);
-    sendRequestWithData("POST", "/delete_todolist", {id_: id_})
+    sendRequestWithData("POST", `/delete_todolist/${id_}`, {})
     .then(res => {
         if(res.status == 200) {
             todolist.remove();
