@@ -3,9 +3,10 @@ from unittest.mock import Mock
 
 import pytest
 
-from app.core.errors import Http400
-from app.core.shortcuts import (get_data_from_request_body, json_response,
-                                render_static, render_template)
+from app.auth.models import AppUser
+from app.core.errors import Http400, Http404
+from app.core.shortcuts import (get_data_from_request_body, get_object_or_404,
+                                json_response, render_static, render_template)
 
 
 def test_render_template(tmpdir, GET_request_obj):
@@ -85,3 +86,14 @@ def test_get_data_from_request_body_returns_required_fields():
     result = get_data_from_request_body(request, ["first", "second", "third"])
 
     assert result == expected
+
+
+def test_get_object_or_404_returns_model_instance(user_and_session):
+    user = user_and_session[0]
+    result = get_object_or_404(AppUser, id_=user.id_)
+    assert str(user) == str(result)
+
+
+def test_get_object_or_404_raises_404_when_object_does_not_exist():
+    with pytest.raises(Http404):
+        get_object_or_404(AppUser, id_=100)

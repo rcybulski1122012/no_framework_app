@@ -1,8 +1,9 @@
-from app.core.errors import Http403
+from app.core.errors import Http401, Http403
 from app.core.http.decorators import http_method_required
+from app.core.http.response import HttpResponse
 from app.core.http.sessions import get_current_session_or_403
-from app.core.shortcuts import (get_data_from_request_body, json_response,
-                                redirect, render_template)
+from app.core.shortcuts import (get_data_from_request_body, get_object_or_404,
+                                json_response, redirect, render_template)
 from app.todolists.models import ToDoList
 
 
@@ -30,14 +31,14 @@ def create_todolist_view(request):
 @http_method_required("POST")
 def delete_todolist_view(request, id_):
     session = get_current_session_or_403(request)
+    todolist = get_object_or_404(ToDoList, id_=id_)
 
-    todolist = ToDoList.select(id_=id_)[0]
     if todolist.creator_id != session["user_id"]:
-        raise Http403
+        raise Http401
 
     todolist.delete()
 
-    return json_response(request, {})
+    return HttpResponse(request.version, 200, "OK")
 
 
 def edit_todolist_view(request, id_):
@@ -46,10 +47,10 @@ def edit_todolist_view(request, id_):
     except Http403:
         return redirect(request, "/")
 
-    todolist = ToDoList.select(id_=id_)[0]
+    todolist = get_object_or_404(ToDoList, id_=id_)
 
     if todolist.creator_id != session["user_id"]:
-        raise Http403
+        raise Http401
 
     return render_template(
         request,
@@ -66,9 +67,9 @@ def update_todolist_view(request, id_):
 
     name, description = get_data_from_request_body(request, ["name", "description"])
 
-    todolist = ToDoList.select(id_=id_)[0]
+    todolist = get_object_or_404(ToDoList, id_=id_)
     if todolist.creator_id != session["user_id"]:
-        raise Http403
+        raise Http401
 
     todolist.name = name
     todolist.description = description

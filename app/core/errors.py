@@ -11,6 +11,12 @@ class Http400(HttpException):
         return HttpResponse(request.version, 400, "Bad Request")
 
 
+class Http401(HttpException):
+    @staticmethod
+    def get_response(request):
+        return HttpResponse(request.version, 401, "Unauthorized")
+
+
 class Http403(HttpException):
     @staticmethod
     def get_response(request):

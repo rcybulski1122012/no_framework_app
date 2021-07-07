@@ -1,15 +1,15 @@
 import json
 import re
 
-from app.core.errors import Http400
+from app.core.errors import Http400, Http404
 from app.core.http.response import HttpResponse
 from app.settings import STATIC_DIR, TEMPLATES_DIR
 
 
-def json_response(request, response_dict, *, status_code=200):
+def json_response(request, response_dict, *, status_code=200, readable="OK"):
     body = json.dumps(response_dict)
     headers = {"Content-Type": "application/json", "Content-Length": len(body)}
-    return HttpResponse(request.version, status_code, "OK", headers, body)
+    return HttpResponse(request.version, status_code, readable, headers, body)
 
 
 def render_template(request, path, *, templates_dir=TEMPLATES_DIR, **kwargs):
@@ -51,3 +51,10 @@ def get_data_from_request_body(request, fields_names):
         raise Http400
     else:
         return result
+
+
+def get_object_or_404(model, **conditions):
+    try:
+        return model.select(**conditions)[0]
+    except IndexError:
+        raise Http404
