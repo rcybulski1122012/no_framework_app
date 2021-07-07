@@ -1,6 +1,7 @@
 import json
 import re
 
+from app.core.errors import Http400
 from app.core.http.response import HttpResponse
 from app.settings import STATIC_DIR, TEMPLATES_DIR
 
@@ -40,3 +41,13 @@ def redirect(request, path):
         "Location": path,
     }
     return HttpResponse(request.version, 302, "Found", headers)
+
+
+def get_data_from_request_body(request, fields_names):
+    try:
+        data = json.loads(request.body)
+        result = [data[field_name] for field_name in fields_names]
+    except (json.decoder.JSONDecodeError, KeyError):
+        raise Http400
+    else:
+        return result

@@ -4,12 +4,10 @@ from app.auth.errors import (AuthenticationError, PasswordsDoNotMatch,
                              TakenEmailError, TakenUsernameError)
 from app.auth.models import AppUser
 from app.auth.shortcuts import authenticate
-from app.core.errors import Http400
 from app.core.http.decorators import http_method_required
 from app.core.http.response import HttpResponse
 from app.core.http.sessions import Session
-from app.core.shortcuts import json_response
-from app.core.utils import get_data_from_request_body
+from app.core.shortcuts import get_data_from_request_body, json_response
 
 
 @http_method_required("POST")

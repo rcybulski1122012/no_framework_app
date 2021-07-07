@@ -1,8 +1,8 @@
 from app.core.errors import Http403
 from app.core.http.decorators import http_method_required
 from app.core.http.sessions import get_current_session_or_403
-from app.core.shortcuts import json_response, render_template, redirect
-from app.core.utils import get_data_from_request_body
+from app.core.shortcuts import (get_data_from_request_body, json_response,
+                                redirect, render_template)
 from app.todolists.models import ToDoList
 
 
@@ -48,4 +48,10 @@ def edit_todolist_view(request, id_):
     if todolist.creator_id != session["user_id"]:
         raise Http403
 
-    return render_template(request, "edit_todolist.html", name=todolist.name, description=todolist.description, id_=id_)
+    return render_template(
+        request,
+        "edit_todolist.html",
+        name=todolist.name,
+        description=todolist.description,
+        id_=id_,
+    )
