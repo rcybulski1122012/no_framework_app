@@ -1,6 +1,7 @@
 from app.auth.views import create_user_view, login_user_view
 from app.todolists.views import (create_todolist_view, delete_todolist_view,
-                                 edit_todolist_view, todolists_list_view, update_todolist_view)
+                                 edit_todolist_view, todolists_list_view,
+                                 update_todolist_view)
 from app.views import index, static
 
 urls = {

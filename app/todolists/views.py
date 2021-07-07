@@ -64,11 +64,11 @@ def edit_todolist_view(request, id_):
 def update_todolist_view(request, id_):
     session = get_current_session_or_403(request)
 
+    name, description = get_data_from_request_body(request, ["name", "description"])
+
     todolist = ToDoList.select(id_=id_)[0]
     if todolist.creator_id != session["user_id"]:
         raise Http403
-
-    name, description = get_data_from_request_body(request, ["name", "description"])
 
     todolist.name = name
     todolist.description = description

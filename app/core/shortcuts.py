@@ -22,7 +22,7 @@ def render_template(request, path, *, templates_dir=TEMPLATES_DIR, **kwargs):
 
         for match in matches:
             start, stop = match.span()
-            body = body[:start] + value + body[stop:]
+            body = body[:start] + str(value) + body[stop:]
 
     headers = {"Content-Type": "text/html", "Content-Length": len(body)}
     return HttpResponse(request.version, 200, "OK", headers, body)
