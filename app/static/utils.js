@@ -1,13 +1,15 @@
-function sendRequestWithData(method, path, data) {
-    const stringified = JSON.stringify(data);
+function sendRequest(method, path, data=null) {
     const options = {
         method: method,
-        headers: {
+    };
+    if(data) {
+        const stringified = JSON.stringify(data);
+        options.headers = {
             "Content-Type": "application/json",
             "Content-Length": stringified.length
-        },
-       body: stringified
-    };
+        }
+        options.body = stringified
+    }
     return fetch(path, options);
 }
 
@@ -21,4 +23,4 @@ function getDataFromForm(form, nameSelectorObj) {
     return result
 }
 
-export {sendRequestWithData, getDataFromForm}
+export {sendRequest, getDataFromForm}

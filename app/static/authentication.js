@@ -1,4 +1,4 @@
-import { sendRequestWithData, getDataFromForm } from "./utils.js";
+import { sendRequest, getDataFromForm } from "./utils.js";
 
 const loginForm = document.querySelector("#login-form");
 const registerForm = document.querySelector("#register-form");
@@ -12,7 +12,7 @@ function login(e) {
     const data = getDataFromForm(loginForm, {"username": "#username-login", "password": "#password-login"});
     let statusCode = null;
 
-    const res = sendRequestWithData("POST", "/login", data)
+    const res = sendRequest("POST", "/login", data)
     .then(res => {
         statusCode = res.status;
         return res;
@@ -50,7 +50,7 @@ function register(e) {
     let statusCode = null;
 
 
-    sendRequestWithData("POST", "/register", data)
+    sendRequest("POST", "/register", data)
     .then(res => {
         statusCode = res.status;
         return res;

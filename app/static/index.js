@@ -1,4 +1,4 @@
-import { sendRequestWithData, getDataFromForm } from "./utils.js";
+import { sendRequest, getDataFromForm } from "./utils.js";
 
 const toDoListsList = document.querySelector("#todolists-list");
 const createToDoListForm = document.querySelector("#create-todolist-form");
@@ -63,7 +63,7 @@ function createToDoList(e) {
     e.preventDefault();
     const data = getDataFromForm(createToDoListForm, {"name": "#todolist-name", "description": "#todolist-description"})
 
-    sendRequestWithData("POST", "/create_todolist", data)
+    sendRequest("POST", "/create_todolist", data)
     .then(res => res.json())
     .then(createToDoListHtmlElement);
 
@@ -73,7 +73,7 @@ function createToDoList(e) {
 function deleteToDoList(e) {
     const todolist = e.target.closest(".todolist");
     const id_ = Number(todolist.dataset.id);
-    sendRequestWithData("POST", `/delete_todolist/${id_}`, {})
+    sendRequest("POST", `/delete_todolist/${id_}`, {})
     .then(res => {
         if(res.status == 200) {
             todolist.remove();
