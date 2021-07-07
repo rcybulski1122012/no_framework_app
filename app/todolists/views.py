@@ -55,3 +55,20 @@ def edit_todolist_view(request, id_):
         description=todolist.description,
         id_=id_,
     )
+
+
+@http_method_required("POST")
+def update_todolist_view(request, id_):
+    session = get_current_session_or_403(request)
+
+    todolist = ToDoList.select(id_=id_)[0]
+    if todolist.creator_id != session["user_id"]:
+        raise Http403
+
+    name, description = get_data_from_request_body(request, ["name", "description"])
+
+    todolist.name = name
+    todolist.description = description
+    todolist.save()
+
+    return json_response(request, {})

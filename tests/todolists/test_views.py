@@ -4,10 +4,10 @@ import uuid
 import pytest
 
 from app.core.errors import Http403, Http405
-from app.core.http.request import HttpRequest
 from app.todolists.models import ToDoList
 from app.todolists.views import (create_todolist_view, delete_todolist_view,
-                                 edit_todolist_view, todolists_list_view)
+                                 edit_todolist_view, todolists_list_view,
+                                 update_todolist_view)
 from tests.utils import json_request
 
 
@@ -140,3 +140,45 @@ def test_edit_todolist_view_raises_403_when_forbidden(user_and_session):
 
     with pytest.raises(Http403):
         edit_todolist_view(request, todolist.id_)
+
+
+def test_update_todolist_view_raises_405_when_method_different_than_POST():
+    request = json_request("GET", "/update_todolist/10", {})
+
+    with pytest.raises(Http405):
+        update_todolist_view(request, 10)
+
+
+def test_update_todolist_view_raises_403_when_not_logged_in():
+    request = json_request("POST", "/edit_todolist/10", {})
+
+    with pytest.raises(Http403):
+        update_todolist_view(request, 10)
+
+
+def test_update_todolist_view_raises_403_when_forbidden(user_and_session):
+    user, session = user_and_session
+    todolist = ToDoList.create(name="name", description="description", creator_id=100)
+    request = json_request(
+        "POST", "/update_todolist/10", {}, f"session_id={session.session_id}"
+    )
+
+    with pytest.raises(Http403):
+        update_todolist_view(request, todolist.id_)
+
+
+def test_update_todolist_view_updates_todolist(user_and_session):
+    user, session = user_and_session
+    todolist = ToDoList.create(
+        name="name", description="description", creator_id=user.id_
+    )
+    data = {"name": "new name", "description": "new description"}
+    request = json_request(
+        "POST", "/update_todolist/10", data, cookie=f"session_id={session.session_id}"
+    )
+
+    update_todolist_view(request, todolist.id_)
+    todolist = ToDoList.select(id_=todolist.id_)[0]
+
+    assert todolist.name == "new name"
+    assert todolist.description == "new description"
