@@ -15,6 +15,7 @@
         <form id="edit-todolist-form">
           <input type="text" id="todolist-name" placeholder="name" class="form-control my-3" required value="{{ name }}">
           <input type="text" id="todolist-description" placeholder="description" class="form-control my-3" value="{{ description }}">
+          <div id="update-errors" class="my-3 text-danger"></div>
           <input type="submit" value="Edit ToDoList" class="btn btn-primary">
         </form>
       </div>

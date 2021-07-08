@@ -13,6 +13,7 @@ function sendRequest(method, path, data=null) {
     return fetch(path, options);
 }
 
+
 function getDataFromForm(form, nameSelectorObj) {
     const result = {}
     for(const property in nameSelectorObj) {
@@ -22,5 +23,6 @@ function getDataFromForm(form, nameSelectorObj) {
     }
     return result
 }
+
 
 export {sendRequest, getDataFromForm}

@@ -29,7 +29,9 @@ def create_todolist_view(request):
     except ValidationError as e:
         return e.get_response(request)
 
-    return json_response(request, todolist.get_fields_values_dict())
+    return json_response(
+        request, todolist.get_fields_values_dict(), status_code=201, readable="Created"
+    )
 
 
 @http_method_required("POST")

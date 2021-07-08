@@ -39,7 +39,7 @@ class Field:
 
     def __set__(self, instance, value):
         for validator in self.validators:
-            validator.validate(value)
+            validator.validate(value, field_name=self.column_name)
 
         self._values[instance] = value
 

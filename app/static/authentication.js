@@ -12,13 +12,14 @@ function login(e) {
     const data = getDataFromForm(loginForm, {"username": "#username-login", "password": "#password-login"});
     let statusCode = null;
 
-    const res = sendRequest("POST", "/login", data)
+    sendRequest("POST", "/login", data)
     .then(res => {
         statusCode = res.status;
         return res;
     })
     .then(res => res.json())
     .then(res => {
+        console.log(statusCode);
         if(statusCode === 201)
             successLogin(res);
         else
@@ -26,6 +27,7 @@ function login(e) {
     })
     .catch(error => console.log("Error", error));
 }
+
 
 function successLogin(res) {
     document.cookie = "session_id=" + res["session_id"] + ";";

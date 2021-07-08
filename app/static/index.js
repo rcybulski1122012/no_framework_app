@@ -13,6 +13,7 @@ async function buildList() {
     createToDoListHtmlElements(listsData);
 }
 
+
 async function getToDoLists() {
     const options = getRequestHeaders();
     const response = await fetch("/todolists", options);
@@ -20,15 +21,18 @@ async function getToDoLists() {
     return result["todolists"];
 }
 
+
 function getRequestHeaders() {
     return {
         "Cookie": document.cookie,
     }
 }
 
+
 function createToDoListHtmlElements(data) {
     return data.forEach(createToDoListHtmlElement);
 }
+
 
 function createToDoListHtmlElement(el) {
     const toDoList = document.createElement("div");
@@ -61,14 +65,33 @@ function createToDoListHtmlElement(el) {
 
 function createToDoList(e) {
     e.preventDefault();
+    clearMessagesDivs();
     const data = getDataFromForm(createToDoListForm, {"name": "#todolist-name", "description": "#todolist-description"})
+    let statusCode = null;
 
     sendRequest("POST", "/create_todolist", data)
+    .then(res => {
+        statusCode = res.status;
+        return res;
+    })
     .then(res => res.json())
-    .then(createToDoListHtmlElement);
-
-    createToDoListForm.reset();
+    .then(res => {
+        if (statusCode == 201) {
+            createToDoListHtmlElement(res);
+            createToDoListForm.reset();
+        }
+        else {
+            createToDoListForm.querySelector("#create-errors").innerText = res["error"];
+        }
+    })
+    .catch(error => console.log("Error", error));
 }
+
+
+function clearMessagesDivs() {
+    createToDoListForm.querySelector("#create-errors").innerText = "";
+}
+
 
 function deleteToDoList(e) {
     const todolist = e.target.closest(".todolist");
