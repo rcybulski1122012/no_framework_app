@@ -19,5 +19,8 @@ function editToDoList(e) {
         if(statusCode != 200) {
             editToDoListForm.querySelector("#update-errors").innerText = res["error"];
         }
+        else {
+            editToDoListForm.querySelector("#update-errors").innerText = "";
+        }
     });
 }
