@@ -12,8 +12,8 @@ from tests.utils import json_request
 def test_create_user_view_creates_user_when_everything_is_ok():
     data = {
         "username": "username",
-        "password1": "password",
-        "password2": "password",
+        "password1": "Password0!",
+        "password2": "Password0!",
         "email": "emial@gmail.com",
     }
     request = json_request("POST", "/register", data)
@@ -42,8 +42,8 @@ def test_create_user_view_raises_400_when_invalid_request_data():
 def test_create_user_view_returns_error_when_passwords_are_not_the_same():
     data = {
         "username": "username",
-        "password1": "first",
-        "password2": "second",
+        "password1": "Password1!",
+        "password2": "Password2!",
         "email": "email@gmail.com",
     }
     request = json_request("POST", "/register", data)
@@ -55,12 +55,12 @@ def test_create_user_view_returns_error_when_passwords_are_not_the_same():
 
 def test_create_user_view_returns_error_when_username_is_taken():
     AppUser.create(
-        username="taken_username", password="password", email="email@email.com"
+        username="taken_username", password="Password0!", email="email@email.com"
     )
     data = {
         "username": "taken_username",
-        "password1": "password",
-        "password2": "password",
+        "password1": "Password0!",
+        "password2": "Password0!",
         "email": "email@gmail.com",
     }
     request = json_request("POST", "/register", data)
@@ -72,12 +72,12 @@ def test_create_user_view_returns_error_when_username_is_taken():
 
 def test_create_user_view_returns_error_when_email_is_taken():
     AppUser.create(
-        username="taken_username", password="password", email="email@gmail.com"
+        username="taken_username", password="Password0!", email="email@gmail.com"
     )
     data = {
-        "username": "admin",
-        "password1": "password",
-        "password2": "password",
+        "username": "username",
+        "password1": "Password0!",
+        "password2": "Password0!",
         "email": "email@gmail.com",
     }
     request = json_request("POST", "/register", data)
@@ -89,9 +89,9 @@ def test_create_user_view_returns_error_when_email_is_taken():
 
 def test_login_user_view_creates_session_object_and_creates_cookie():
     user = AppUser.create(
-        username="username", password="password", email="email@gmail.com"
+        username="username", password="Password0!", email="email@gmail.com"
     )
-    data = {"username": "username", "password": "password"}
+    data = {"username": "username", "password": "Password0!"}
     request = json_request("POST", "/login", data)
 
     response = login_user_view(request)
@@ -104,22 +104,22 @@ def test_login_user_view_creates_session_object_and_creates_cookie():
 
 
 def test_login_user_view_returns_error_when_user_does_not_exist():
-    data = {"username": "username", "password": "password"}
+    data = {"username": "username", "password": "Password0!"}
     request = json_request("POST", "/login", data)
 
     response = login_user_view(request)
 
-    assert "User with this username does not exist." in response.body
+    assert "User with given username does not exist." in response.body
 
 
 def test_login_user_view_returns_error_when_invalid_password():
-    AppUser.create(username="username", password="password", email="email@gmail.com")
+    AppUser.create(username="username", password="Password0!", email="email@gmail.com")
     data = {"username": "username", "password": "invalid-password"}
     request = json_request("POST", "/login", data)
 
     response = login_user_view(request)
 
-    assert "Invalid password." in response.body
+    assert "Given password does not match user password." in response.body
 
 
 def test_login_user_view_raises_405_when_invalid_method():

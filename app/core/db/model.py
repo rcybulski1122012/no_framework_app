@@ -7,13 +7,20 @@ from app.core.errors import MissingRequiredArgument, ModelDeletionException
 
 class Field:
     def __init__(
-        self, data_type, nullable=False, default=None, unique=False, primary_key=False
+        self,
+        data_type,
+        nullable=False,
+        default=None,
+        unique=False,
+        primary_key=False,
+        validators=None,
     ):
         self.data_type = data_type
         self.nullable = nullable
         self.default = default
         self.unique = unique
         self.primary_key = primary_key
+        self.validators = validators or []
 
         self._values = WeakKeyDictionary()
 
@@ -31,6 +38,9 @@ class Field:
         return self._values.get(instance)
 
     def __set__(self, instance, value):
+        for validator in self.validators:
+            validator.validate(value)
+
         self._values[instance] = value
 
     def __repr__(self):

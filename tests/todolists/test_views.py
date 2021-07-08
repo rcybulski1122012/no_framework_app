@@ -59,6 +59,16 @@ def test_create_todolist_view_creates_todolist(user_and_session):
     assert todolist.description == "description"
 
 
+def test_create_todolist_view_returns_error_when_invalid_data(user_and_session):
+    user, session = user_and_session
+    data = {"name": "", "description": "description"}
+    request = json_request("POST", "/create_todolist", data, session)
+
+    response = create_todolist_view(request)
+
+    assert "error" in response.body
+
+
 def test_create_todolist_view_returns_json_repr_of_created_list(user_and_session):
     user, session = user_and_session
     data = {"name": "name", "description": "description"}
@@ -214,6 +224,19 @@ def test_update_todolist_view_updates_todolist(user_and_session):
 
     assert todolist.name == "new name"
     assert todolist.description == "new description"
+
+
+def test_update_todolist_view_returns_error_when_invalid_data(user_and_session):
+    user, session = user_and_session
+    todolist = ToDoList.create(
+        name="name", description="description", creator_id=user.id_
+    )
+    data = {"name": "", "description": "description"}
+    request = json_request("POST", "/update_todolist/10", data, session)
+
+    response = update_todolist_view(request, todolist.id_)
+
+    assert "error" in response.body
 
 
 def test_update_todolist_view_raises_400_when_lack_of_data(user_and_session):

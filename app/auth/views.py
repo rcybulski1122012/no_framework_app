@@ -1,9 +1,8 @@
 import json
 
-from app.auth.errors import (AuthenticationError, PasswordsDoNotMatch,
-                             TakenEmailError, TakenUsernameError)
 from app.auth.models import AppUser
 from app.auth.shortcuts import authenticate
+from app.core.errors import ValidationError
 from app.core.http.decorators import http_method_required
 from app.core.http.response import HttpResponse
 from app.core.http.sessions import Session
@@ -18,21 +17,21 @@ def create_user_view(request):
 
     try:
         _validate_registration_data(username, password1, password2, email)
-    except AuthenticationError as e:
-        return e.get_response(request)
-    else:
         user = AppUser(username=username, password=password1, email=email)
-        user.save()
-        return HttpResponse(request.version, 201, "Created", {}, "{}")
+    except ValidationError as e:
+        return e.get_response(request)
+
+    user.save()
+    return HttpResponse(request.version, 201, "Created", {}, "{}")
 
 
 def _validate_registration_data(username, password1, password2, email):
     if password1 != password2:
-        raise PasswordsDoNotMatch
+        raise ValidationError("Both passwords should be the same.")
     elif AppUser.select(username=username):
-        raise TakenUsernameError
+        raise ValidationError("This username is taken.")
     elif AppUser.select(email=email):
-        raise TakenEmailError
+        raise ValidationError("An account with this email already exists.")
 
 
 @http_method_required("POST")
@@ -41,12 +40,12 @@ def login_user_view(request):
 
     try:
         user = authenticate(username, password)
-    except AuthenticationError as e:
+    except ValidationError as e:
         return e.get_response(request)
-    else:
-        data = json.dumps({"user_id": user.id_})
-        session = Session(data=data)
-        session.save()
-        return json_response(
-            request, {"session_id": str(session.session_id)}, status_code=201
-        )
+
+    data = json.dumps({"user_id": user.id_})
+    session = Session(data=data)
+    session.save()
+    return json_response(
+        request, {"session_id": str(session.session_id)}, status_code=201
+    )

@@ -1,4 +1,4 @@
-from app.core.errors import Http401, Http403
+from app.core.errors import Http401, Http403, ValidationError
 from app.core.http.decorators import http_method_required
 from app.core.http.response import HttpResponse
 from app.core.http.sessions import get_current_session_or_403
@@ -22,9 +22,13 @@ def create_todolist_view(request):
     session = get_current_session_or_403(request)
 
     name, description = get_data_from_request_body(request, ["name", "description"])
-    todolist = ToDoList.create(
-        name=name, description=description, creator_id=session["user_id"]
-    )
+    try:
+        todolist = ToDoList.create(
+            name=name, description=description, creator_id=session["user_id"]
+        )
+    except ValidationError as e:
+        return e.get_response(request)
+
     return json_response(request, todolist.get_fields_values_dict())
 
 
@@ -71,8 +75,13 @@ def update_todolist_view(request, id_):
     if todolist.creator_id != session["user_id"]:
         raise Http401
 
+    try:
+        ToDoList(name=name, description=description, creator_id=1)
+    except ValidationError as e:
+        return e.get_response(request)
+
     todolist.name = name
     todolist.description = description
     todolist.save()
 
-    return json_response(request, {})
+    return HttpResponse(request.version, 200, "OK")

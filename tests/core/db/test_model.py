@@ -1,7 +1,8 @@
 import pytest
 
 from app.core.db.model import Field, Model
-from app.core.errors import MissingRequiredArgument, ModelDeletionException
+from app.core.errors import (MissingRequiredArgument, ModelDeletionException,
+                             ValidationError)
 from tests.core.db.utils import get_all_tables
 
 
@@ -52,6 +53,17 @@ def test_field_dunder_set(field, dummy_class):
     field.__set__(instance, 5)
 
     assert field._values[instance] == 5
+
+
+def test_field_dunder_set_raises_validation_error_when_invalid_data(dummy_class):
+    class Validator:
+        def validate(self, value):
+            raise ValidationError
+
+    instance = dummy_class()
+    field = Field("integer", validators=[Validator()])
+    with pytest.raises(ValidationError):
+        field.__set__(instance, 5)
 
 
 def test_model_init_raises_exception_when_argument_not_provided(model):

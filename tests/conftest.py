@@ -46,6 +46,8 @@ def before_each(request, db_connection):
 
 @pytest.fixture
 def user_and_session():
-    user = AppUser.create(username="username", password="password", email="email")
+    user = AppUser.create(
+        username="username", password="Password0!", email="email@gmail.com"
+    )
     session = Session.create(data={"user_id": user.id_})
     return user, session
