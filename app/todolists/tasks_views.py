@@ -37,3 +37,17 @@ def create_task_view(request):
     return json_response(
         request, task.get_fields_values_dict(), status_code=201, readable="Created"
     )
+
+
+@http_method_required("POST")
+def delete_task_view(request, id_):
+    session = get_current_session_or_403(request)
+    task = get_object_or_404(Task, id_=id_)
+    todolist = task.todolist
+
+    if todolist.creator_id != session["user_id"]:
+        raise Http401
+
+    task.delete()
+
+    return HttpResponse(request.version, 200, "OK")

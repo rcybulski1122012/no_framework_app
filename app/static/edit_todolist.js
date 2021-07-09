@@ -57,6 +57,7 @@ function createTaskHtmlElement(el) {
     const task = taskTemplate.querySelector(".task").cloneNode(true);
     task.dataset.todolist_id = id_;
     task.dataset.id = el["id_"];
+    task.querySelector(".delete-task-button").addEventListener("click", deleteTask)
     task.querySelector(".task-content").innerText = el["content"];
     tasksList.append(task);
 }
@@ -84,5 +85,17 @@ function createTask(e) {
         }
     })
     .catch(error => console.log("Error", error));
+}
 
+
+function deleteTask(e) {
+    const task = e.target.closest(".task");
+    const taskId = task.dataset.id
+
+    sendRequest("POST", `/delete_task/${taskId}`)
+    .then(res => {
+        if(res.status == 200) {
+            task.remove();
+        }
+    })
 }
