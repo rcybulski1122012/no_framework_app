@@ -1,6 +1,9 @@
 from app.core.errors import Http401
+from app.core.http.decorators import http_method_required
+from app.core.http.response import HttpResponse
 from app.core.http.sessions import get_current_session_or_403
-from app.core.shortcuts import get_object_or_404, json_response
+from app.core.shortcuts import (get_data_from_request_body, get_object_or_404,
+                                json_response)
 from app.todolists.models import Task, ToDoList
 
 
@@ -16,3 +19,21 @@ def tasks_list_view(request, todolist_id):
     response_dict = {"tasks": serialized}
 
     return json_response(request, response_dict)
+
+
+@http_method_required("POST")
+def create_task_view(request):
+    session = get_current_session_or_403(request)
+    content, todolist_id = get_data_from_request_body(
+        request, ["content", "todolist_id"]
+    )
+    todolist = get_object_or_404(ToDoList, id_=todolist_id)
+
+    if todolist.creator_id != session["user_id"]:
+        raise Http401
+
+    task = Task.create(content=content, todolist_id=todolist_id)
+
+    return json_response(
+        request, task.get_fields_values_dict(), status_code=201, readable="Created"
+    )

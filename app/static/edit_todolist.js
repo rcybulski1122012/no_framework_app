@@ -1,13 +1,14 @@
 import { sendRequest, getDataFromForm } from "./utils.js";
 
 const editToDoListForm = document.querySelector("#edit-todolist-form");
-const createTaskForm = document.querySelector("#creat-task-form");
+const createTaskForm = document.querySelector("#create-task-form");
 const tasksList = document.querySelector("#tasks-list");
 const taskTemplate = document.querySelector("#task-template").content.cloneNode(true);
 
 const id_ = document.querySelector("#content").dataset.id;
 
 editToDoListForm.addEventListener("submit", editToDoList);
+createTaskForm.addEventListener("submit", createTask);
 
 buildTasks();
 
@@ -35,7 +36,6 @@ function editToDoList(e) {
 
 async function buildTasks() {
     const tasksData = await getTasksData();
-    console.log(tasksData);
     createTasksHtmlElements(tasksData);
 }
 
@@ -47,13 +47,42 @@ async function getTasksData() {
     return result["tasks"];
 }
 
+
 function createTasksHtmlElements(data) {
     data.forEach(createTaskHtmlElement);
 }
 
+
 function createTaskHtmlElement(el) {
-  const task = taskTemplate.querySelector(".task").cloneNode(true);
-  task.dataset.id = id_;
-  task.querySelector(".task-content").innerText = el["content"];
-  tasksList.append(task);
+    const task = taskTemplate.querySelector(".task").cloneNode(true);
+    task.dataset.todolist_id = id_;
+    task.dataset.id = el["id_"];
+    task.querySelector(".task-content").innerText = el["content"];
+    tasksList.append(task);
+}
+
+
+function createTask(e) {
+    e.preventDefault();
+    const data = getDataFromForm(createTaskForm, {"content": "#task-content"});
+    data.todolist_id = id_;
+    let statusCode = null;
+
+    sendRequest("POST", "/create_task", data)
+    .then(res => {
+        statusCode = res.status;
+        return res;
+    })
+    .then(res => res.json())
+    .then(res => {
+        if (statusCode == 201) {
+            createTaskHtmlElement(res);
+            createTaskForm.reset();
+        }
+        else {
+            createTaskForm.querySelector("#create-task-errors").innerText = res["error"];
+        }
+    })
+    .catch(error => console.log("Error", error));
+
 }

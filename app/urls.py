@@ -1,5 +1,5 @@
 from app.auth.views import create_user_view, login_user_view
-from app.todolists.tasks_views import tasks_list_view
+from app.todolists.tasks_views import create_task_view, tasks_list_view
 from app.todolists.todolists_views import (create_todolist_view,
                                            delete_todolist_view,
                                            edit_todolist_view,
@@ -18,4 +18,5 @@ urls = {
     "/edit_todolist/<id_>": edit_todolist_view,
     "/update_todolist/<id_>": update_todolist_view,
     "/tasks/<todolist_id>": tasks_list_view,
+    "/create_task": create_task_view,
 }
