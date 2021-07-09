@@ -15,22 +15,14 @@ async function buildList() {
 
 
 async function getToDoLists() {
-    const options = getRequestHeaders();
+    const options = {"Cookie": document.cookie};
     const response = await fetch("/todolists", options);
     const result = await response.json();
     return result["todolists"];
 }
 
-
-function getRequestHeaders() {
-    return {
-        "Cookie": document.cookie,
-    }
-}
-
-
 function createToDoListHtmlElements(data) {
-    return data.forEach(createToDoListHtmlElement);
+    data.forEach(createToDoListHtmlElement);
 }
 
 

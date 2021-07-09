@@ -86,4 +86,4 @@ def update_todolist_view(request, id_):
     todolist.description = description
     todolist.save()
 
-    return HttpResponse(request.version, 200, "OK", body='{}')
+    return HttpResponse(request.version, 200, "OK", body="{}")

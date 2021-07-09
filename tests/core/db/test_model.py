@@ -57,13 +57,14 @@ def test_field_dunder_set(field, dummy_class):
 
 def test_field_dunder_set_raises_validation_error_when_invalid_data(dummy_class):
     class Validator:
-        def validate(self, value):
+        def validate(self, value, field_name):
             raise ValidationError
 
-    instance = dummy_class()
-    field = Field("integer", validators=[Validator()])
+    class TestModel:
+        field = Field("integer", validators=[Validator()])
+
     with pytest.raises(ValidationError):
-        field.__set__(instance, 5)
+        TestModel.field.__set__(dummy_class(), 5)
 
 
 def test_model_init_raises_exception_when_argument_not_provided(model):
