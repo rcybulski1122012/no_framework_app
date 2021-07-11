@@ -51,3 +51,18 @@ def delete_task_view(request, id_):
     task.delete()
 
     return HttpResponse(request.version, 200, "OK")
+
+
+@http_method_required("POST")
+def mark_task_as_done_view(request, id_):
+    session = get_current_session_or_403(request)
+    task = get_object_or_404(Task, id_=id_)
+    todolist = task.todolist
+
+    if todolist.creator_id != session["user_id"]:
+        raise Http401
+
+    task.is_done = True
+    task.save()
+
+    return HttpResponse(request.version, 200, "OK")

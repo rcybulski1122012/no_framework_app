@@ -24,6 +24,7 @@ class Task(Model):
     content = Field(
         "varchar(128)", validators=[MinLenValidator(1), MaxLenValidator(128)]
     )
+    is_done = Field("boolean", default=False)
     todolist_id = Field("integer")
 
     @property

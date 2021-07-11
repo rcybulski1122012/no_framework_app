@@ -16,3 +16,16 @@ body {
 .todolist button {
     margin-right: 0.5rem;
 }
+
+.task-done {
+
+    opacity: 0.4;
+}
+
+.task-done .task-content {
+    text-decoration: line-through;
+}
+
+.task-done .done-task-button {
+    pointer-events: none;
+}

@@ -57,8 +57,12 @@ function createTaskHtmlElement(el) {
     const task = taskTemplate.querySelector(".task").cloneNode(true);
     task.dataset.todolist_id = id_;
     task.dataset.id = el["id_"];
-    task.querySelector(".delete-task-button").addEventListener("click", deleteTask)
+    if(el["is_done"]) {
+        task.classList.add("task-done");
+    }
+    task.querySelector(".delete-task-button").addEventListener("click", deleteTask);
     task.querySelector(".task-content").innerText = el["content"];
+    task.querySelector(".done-task-button").addEventListener("click", markAsDone);
     tasksList.append(task);
 }
 
@@ -90,7 +94,7 @@ function createTask(e) {
 
 function deleteTask(e) {
     const task = e.target.closest(".task");
-    const taskId = task.dataset.id
+    const taskId = task.dataset.id;
 
     sendRequest("POST", `/delete_task/${taskId}`)
     .then(res => {
@@ -98,4 +102,17 @@ function deleteTask(e) {
             task.remove();
         }
     })
+}
+
+
+function markAsDone(e) {
+    const task = e.target.closest(".task");
+    const taskId = task.dataset.id;
+
+    sendRequest("POST", `/mark_task_as_done/${taskId}`)
+    .then(res => {
+        if(res.status == 200) {
+            task.classList.add("task-done");
+        }
+    });
 }
