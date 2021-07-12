@@ -4,7 +4,7 @@ from uuid import UUID
 import pytest
 
 from app.core.db.model import Model
-from app.core.errors import Http403, InvalidSessionData
+from app.core.http.errors import Http403, InvalidSessionData
 from app.core.http.request import HttpRequest
 from app.core.http.sessions import Session, get_current_session_or_403
 from app.scripts.install_extensions import install_extensions

@@ -1,8 +1,8 @@
 from weakref import WeakKeyDictionary
 
 from app.core.db.db_connection import db
+from app.core.db.errors import MissingRequiredArgument, ModelDoesNotExistInDb
 from app.core.db.queries_generator import QueriesGenerator
-from app.core.errors import MissingRequiredArgument, ModelDeletionException
 
 
 class Field:
@@ -167,7 +167,7 @@ class Model:
 
     def delete(self):
         if self.id_ is None:
-            raise ModelDeletionException(
+            raise ModelDoesNotExistInDb(
                 "You can't delete an object which hasn't been saved in database"
             )
 
@@ -211,3 +211,16 @@ class Model:
         result = [cls.create_from_query_response(record) for record in records]
 
         return result
+
+    def refresh(self):
+        if self.id_ is None:
+            raise ModelDoesNotExistInDb(
+                "You can't refresh a model that does not exist in the database"
+            )
+
+        instance = self.select(id_=self.id_)[0]
+        fields_names = self.get_fields_names()
+
+        for field_name in fields_names:
+            print(getattr(instance, field_name))
+            setattr(self, field_name, getattr(instance, field_name))

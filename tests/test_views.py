@@ -1,6 +1,6 @@
 import pytest
 
-from app.core.errors import Http404
+from app.core.http.errors import Http404
 from app.core.http.request import HttpRequest
 from app.core.http.sessions import Session
 from app.views import index, static

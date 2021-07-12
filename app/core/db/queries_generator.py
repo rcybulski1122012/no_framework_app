@@ -1,4 +1,4 @@
-from app.core.errors import InvalidCondition
+from app.core.db.errors import InvalidCondition
 
 
 class QueriesGenerator:

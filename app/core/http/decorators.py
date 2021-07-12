@@ -1,6 +1,6 @@
 from functools import wraps
 
-from app.core.errors import Http405
+from app.core.http.errors import Http405
 
 
 def http_method_required(method):

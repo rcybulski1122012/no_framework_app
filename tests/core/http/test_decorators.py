@@ -14,8 +14,8 @@
 #     assert result.get_response() == expected
 import pytest
 
-from app.core.errors import Http405
 from app.core.http.decorators import http_method_required
+from app.core.http.errors import Http405
 
 
 def test_http_method_required_does_nothing_when_given_method(view, POST_request_obj):

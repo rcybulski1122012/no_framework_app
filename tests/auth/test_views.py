@@ -4,7 +4,7 @@ import pytest
 
 from app.auth.models import AppUser
 from app.auth.views import create_user_view, login_user_view
-from app.core.errors import Http400, Http405
+from app.core.http.errors import Http400, Http405
 from app.core.http.sessions import Session
 from tests.utils import json_request
 

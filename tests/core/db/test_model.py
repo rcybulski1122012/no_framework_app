@@ -1,8 +1,8 @@
 import pytest
 
+from app.core.db.errors import MissingRequiredArgument, ModelDoesNotExistInDb
 from app.core.db.model import Field, Model
-from app.core.errors import (MissingRequiredArgument, ModelDeletionException,
-                             ValidationError)
+from app.core.errors import ValidationError
 from tests.core.db.utils import get_all_tables
 
 
@@ -197,7 +197,7 @@ def test_model_delete_deletes_object(instance):
 
 
 def test_model_delete_raises_exception_when_model_id_is_none(instance):
-    with pytest.raises(ModelDeletionException):
+    with pytest.raises(ModelDoesNotExistInDb):
         instance.delete()
 
 
@@ -277,3 +277,24 @@ def test_model_truncate_table(model):
     after = model.select(id_=instance.id_)
 
     assert len(after) == 0
+
+
+def test_model_refresh_retrieves_data_from_database(model):
+    model.create_table()
+    instance = model.create(first=1, second=2, third=3)
+
+    instance2 = model.select(id_=instance.id_)[0]
+    instance2.third = 5
+    instance2.save()
+
+    instance.refresh()
+
+    assert instance.third == 5
+
+
+def test_model_refresh_raises_exception_when_model_id_is_none(model):
+    model.create_table()
+    instance = Model(first=1, second=2, third=3)
+
+    with pytest.raises(ModelDoesNotExistInDb):
+        instance.refresh()

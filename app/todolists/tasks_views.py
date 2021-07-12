@@ -1,5 +1,5 @@
-from app.core.errors import Http401
 from app.core.http.decorators import http_method_required
+from app.core.http.errors import Http401
 from app.core.http.response import HttpResponse
 from app.core.http.sessions import get_current_session_or_403
 from app.core.shortcuts import (get_data_from_request_body, get_object_or_404,

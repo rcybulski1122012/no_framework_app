@@ -1,6 +1,6 @@
 import traceback
 
-from app.core.errors import Http404, HttpException, InvalidRequestFormat
+from app.core.http.errors import Http404, HttpException, InvalidRequestFormat
 from app.core.http.request import HttpRequest
 from app.core.http.response import HttpResponse
 

@@ -1,7 +1,7 @@
 import json
 import re
 
-from app.core.errors import Http400, Http404
+from app.core.http.errors import Http400, Http404
 from app.core.http.response import HttpResponse
 from app.settings import STATIC_DIR, TEMPLATES_DIR
 

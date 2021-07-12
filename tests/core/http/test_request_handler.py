@@ -1,4 +1,4 @@
-from app.core.errors import Http404
+from app.core.http.errors import Http404
 
 
 def get_request(path):

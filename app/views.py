@@ -1,4 +1,4 @@
-from app.core.errors import Http403, Http404
+from app.core.http.errors import Http403, Http404
 from app.core.http.sessions import get_current_session_or_403
 from app.core.shortcuts import render_static, render_template
 from app.settings import ACCEPTED_STATIC_MIME_TYPES

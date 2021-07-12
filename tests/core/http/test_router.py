@@ -1,6 +1,6 @@
 import pytest
 
-from app.core.errors import Http404
+from app.core.http.errors import Http404
 
 
 def test_route_without_variables(router, view):

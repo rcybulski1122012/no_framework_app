@@ -4,7 +4,7 @@ from unittest.mock import Mock
 import pytest
 
 from app.auth.models import AppUser
-from app.core.errors import Http400, Http404
+from app.core.http.errors import Http400, Http404
 from app.core.shortcuts import (get_data_from_request_body, get_object_or_404,
                                 json_response, render_static, render_template)
 

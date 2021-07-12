@@ -2,7 +2,7 @@ import json
 import uuid
 
 from app.core.db.model import Field, Model
-from app.core.errors import Http403, InvalidSessionData
+from app.core.http.errors import Http403, InvalidSessionData
 
 
 class Session(Model):

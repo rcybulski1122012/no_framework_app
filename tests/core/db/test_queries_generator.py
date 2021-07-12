@@ -1,8 +1,8 @@
 import pytest
 
+from app.core.db.errors import InvalidCondition
 from app.core.db.model import Field
 from app.core.db.queries_generator import QueriesGenerator as q
-from app.core.errors import InvalidCondition
 
 
 def test_get_field_sql_repr(dummy_class):

@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from app.core.errors import Http400, Http401, Http403, Http404, Http405
+from app.core.http.errors import Http400, Http401, Http403, Http404, Http405
 from app.core.http.request import HttpRequest
 from app.todolists.models import Task, ToDoList
 from app.todolists.tasks_views import (create_task_view, delete_task_view,
