@@ -1,3 +1,5 @@
+import json
+
 from app.core.http.errors import InvalidRequestFormat
 from app.core.utils import CaseInsensitiveDict
 
@@ -70,3 +72,20 @@ class HttpRequest:
         for cookie_str in splitted:
             key, value = cookie_str.split("=", 1)
             self.cookies[key] = value
+
+    @classmethod
+    def create(cls, method, path, version, session=None, body=None):
+        raw_request = f"{method} {path} {version}\n"
+
+        if session is not None:
+            raw_request += f"Cookie: session_id={session.session_id}\n"
+
+        if body is not None:
+            body_str = json.dumps(body)
+            raw_request += (
+                f"Content-Type: application/json\n"
+                f"Content-Length: {len(body_str)}\n\n"
+                f"{body_str}"
+            )
+
+        return cls(raw_request.encode())
