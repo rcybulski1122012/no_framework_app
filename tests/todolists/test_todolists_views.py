@@ -12,7 +12,6 @@ from app.todolists.todolists_views import (create_todolist_view,
                                            edit_todolist_view,
                                            todolists_list_view,
                                            update_todolist_view)
-from tests.utils import json_request
 
 
 def test_todolists_list_view_returns_list_of_todolists(user_and_session):
@@ -26,9 +25,7 @@ def test_todolists_list_view_returns_list_of_todolists(user_and_session):
             todolist2.get_fields_values_dict(),
         ]
     }
-    request = HttpRequest(
-        f"GET /create_todolist HTTP/1.1\nCookie: session_id={session.session_id}\n".encode()
-    )
+    request = HttpRequest.create("GET", "/create_todolist", "HTTP/1.1", session)
     response = todolists_list_view(request)
     result = json.loads(response.body)
 
@@ -36,7 +33,7 @@ def test_todolists_list_view_returns_list_of_todolists(user_and_session):
 
 
 def test_todolists_list_view_raises_401_when_not_logged_in():
-    request = HttpRequest(f"GET /todolist HTTP/1.1\n".encode())
+    request = HttpRequest.create("GET", "/create_todolist", "HTTP/1.1")
 
     with pytest.raises(Http403):
         todolists_list_view(request)
@@ -45,7 +42,7 @@ def test_todolists_list_view_raises_401_when_not_logged_in():
 def test_create_todolist_view_creates_todolist(user_and_session):
     user, session = user_and_session
     data = {"name": "name", "description": "description"}
-    request = json_request("POST", "/create_todolist", data, session)
+    request = HttpRequest.create("POST", "/create_todolist", "HTTP/1.1", session, data)
 
     before = ToDoList.select()
     assert len(before) == 0
@@ -64,7 +61,7 @@ def test_create_todolist_view_creates_todolist(user_and_session):
 def test_create_todolist_view_returns_error_when_invalid_data(user_and_session):
     user, session = user_and_session
     data = {"name": "", "description": "description"}
-    request = json_request("POST", "/create_todolist", data, session)
+    request = HttpRequest.create("POST", "/create_todolist", "HTTP/1.1", session, data)
 
     response = create_todolist_view(request)
 
@@ -74,7 +71,7 @@ def test_create_todolist_view_returns_error_when_invalid_data(user_and_session):
 def test_create_todolist_view_returns_json_repr_of_created_list(user_and_session):
     user, session = user_and_session
     data = {"name": "name", "description": "description"}
-    request = json_request("POST", "/create_todolist", data, session)
+    request = HttpRequest.create("POST", "/create_todolist", "HTTP/1.1", session, data)
     response = create_todolist_view(request)
     result = json.loads(response.body)
     todolist = ToDoList.select()[0]
@@ -85,24 +82,22 @@ def test_create_todolist_view_returns_json_repr_of_created_list(user_and_session
 def test_create_todolist_view_raises_400_when_lack_of_data(user_and_session):
     user, session = user_and_session
     data = {"name": "name"}
-    request = json_request("POST", "/create_todolist", data, session)
+    request = HttpRequest.create("POST", "/create_todolist", "HTTP/1.1", session, data)
 
     with pytest.raises(Http400):
         create_todolist_view(request)
 
 
 def test_create_todolist_view_raises_403_when_forbidden():
-    session_id = uuid.uuid4()
-    request = HttpRequest(
-        f"POST /create_todolist HTTP/1.1\nCookie: session_id={session_id}\n".encode()
-    )
+    session = Session(data={})
+    request = HttpRequest.create("POST", "/create_todolist", "HTTP/1.1", session)
 
     with pytest.raises(Http403):
         create_todolist_view(request)
 
 
 def test_create_todolist_raises_405_when_method_different_than_POST():
-    request = HttpRequest(f"GET /create_todolist HTTP/1.1\n".encode())
+    request = HttpRequest.create("GET", "/create_todolist", "HTTP/1.1")
 
     with pytest.raises(Http405):
         create_todolist_view(request)
@@ -114,7 +109,9 @@ def test_delete_todolist_view_deletes_todolist(user_and_session):
         name="name", description="description", creator_id=user.id_
     )
     data = {"id_": todolist.id_}
-    request = json_request("POST", "/delete_todolist", data, session)
+    request = HttpRequest.create(
+        "POST", "/delete_todolist/10", "HTTP/1.1", session, data
+    )
 
     before = ToDoList.select()
     assert len(before) == 1
@@ -132,17 +129,14 @@ def test_delete_todolist_view_raises_401_when_forbidden(user_and_session):
         name="name", description="description", creator_id=user.id_
     )
     session = Session.create(data={"user_id": 100})
-
-    request = HttpRequest(
-        f"POST /delete_todolist/10 HTTP/1.1\nCookie: session_id={session.session_id}\n".encode()
-    )
+    request = HttpRequest.create("POST", "/delete_todolist/10", "HTTP/1.1", session)
 
     with pytest.raises(Http401):
         delete_todolist_view(request, todolist.id_)
 
 
 def test_delete_todolist_raises_403_when_not_logged_in():
-    request = HttpRequest(f"POST /delete_todolist/10 HTTP/1.1\n".encode())
+    request = HttpRequest.create("POST", "/delete_todolist/10", "HTTP/1.1")
 
     with pytest.raises(Http403):
         delete_todolist_view(request, 10)
@@ -150,17 +144,14 @@ def test_delete_todolist_raises_403_when_not_logged_in():
 
 def test_delete_todolist_view_raises_404_when_todolist_does_not_exist(user_and_session):
     user, session = user_and_session
-
-    request = HttpRequest(
-        f"POST /delete_todolist/10 HTTP/1.1\nCookie: session_id={session.session_id}\n".encode()
-    )
+    request = HttpRequest.create("POST", "/delete_todolist/10", "HTTP/1.1", session)
 
     with pytest.raises(Http404):
         delete_todolist_view(request, 100)
 
 
 def test_delete_todolist_raises_405_when_method_different_than_POST():
-    request = HttpRequest(f"GET /delete_todolist HTTP/1.1\n".encode())
+    request = HttpRequest.create("GET", "/delete_todolist/10", "HTTP/1.1")
 
     with pytest.raises(Http405):
         delete_todolist_view(request, 10)
@@ -173,9 +164,7 @@ def test_edit_todolist_view_returns_edit_todolist_html_template(user_and_session
         description="test-todolist-description",
         creator_id=user.id_,
     )
-    request = HttpRequest(
-        f"GET /edit_todolist/10 HTTP/1.1\nCookie: session_id={session.session_id}\n".encode()
-    )
+    request = HttpRequest.create("GET", "/edit_todolist/10", "HTTP/1.1", session)
     response = edit_todolist_view(request, todolist.id_)
 
     assert "test-todolist-name" in response.body
@@ -186,9 +175,7 @@ def test_edit_todolist_view_returns_edit_todolist_html_template(user_and_session
 def test_edit_todolist_view_raises_401_when_forbidden(user_and_session):
     user, session = user_and_session
     todolist = ToDoList.create(name="name", description="description", creator_id=100)
-    request = HttpRequest(
-        f"GET /edit_todolist/10 HTTP/1.1\nCookie: session_id={session.session_id}\n".encode()
-    )
+    request = HttpRequest.create("GET", "/edit_todolist/10", "HTTP/1.1", session)
 
     with pytest.raises(Http401):
         edit_todolist_view(request, todolist.id_)
@@ -196,16 +183,14 @@ def test_edit_todolist_view_raises_401_when_forbidden(user_and_session):
 
 def test_edit_todolist_view_raises_404_when_todolist_does_not_exist(user_and_session):
     user, session = user_and_session
-    request = HttpRequest(
-        f"GET /edit_todolist/10 HTTP/1.1\nCookie: session_id={session.session_id}\n".encode()
-    )
+    request = HttpRequest.create("GET", "/edit_todolist/10", "HTTP/1.1", session)
 
     with pytest.raises(Http404):
         edit_todolist_view(request, 10)
 
 
 def test_edit_todolist_view_redirects_to_index_not_logged_in():
-    request = HttpRequest(f"GET /delete_todolist/10 HTTP/1.1\n".encode())
+    request = HttpRequest.create("GET", "/edit_todolist/10", "HTTP/1.1")
 
     response = edit_todolist_view(request, 10)
 
@@ -219,10 +204,12 @@ def test_update_todolist_view_updates_todolist(user_and_session):
         name="name", description="description", creator_id=user.id_
     )
     data = {"name": "new name", "description": "new description"}
-    request = json_request("POST", "/update_todolist/10", data, session)
+    request = HttpRequest.create(
+        "POST", "/update_todolist/10", "HTTP/1.1", session, data
+    )
 
     update_todolist_view(request, todolist.id_)
-    todolist = ToDoList.select(id_=todolist.id_)[0]
+    todolist.refresh()
 
     assert todolist.name == "new name"
     assert todolist.description == "new description"
@@ -234,8 +221,9 @@ def test_update_todolist_view_returns_error_when_invalid_data(user_and_session):
         name="name", description="description", creator_id=user.id_
     )
     data = {"name": "", "description": "description"}
-    request = json_request("POST", "/update_todolist/10", data, session)
-
+    request = HttpRequest.create(
+        "POST", "/update_todolist/10", "HTTP/1.1", session, data
+    )
     response = update_todolist_view(request, todolist.id_)
 
     assert "error" in response.body
@@ -244,7 +232,9 @@ def test_update_todolist_view_returns_error_when_invalid_data(user_and_session):
 def test_update_todolist_view_raises_400_when_lack_of_data(user_and_session):
     user, session = user_and_session
     data = {"name": "name"}
-    request = json_request("POST", "/create_todolist", data, session)
+    request = HttpRequest.create(
+        "POST", "/update_todolist/10", "HTTP/1.1", session, data
+    )
 
     with pytest.raises(Http400):
         update_todolist_view(request, 10)
@@ -254,16 +244,17 @@ def test_update_todolist_view_raises_401_when_forbidden(user_and_session):
     user, session = user_and_session
     todolist = ToDoList.create(name="name", description="description", creator_id=100)
     data = {"name": "name", "description": "description"}
-    request = json_request("POST", "/update_todolist/10", data, session)
+    request = HttpRequest.create(
+        "POST", "/update_todolist/10", "HTTP/1.1", session, data
+    )
 
     with pytest.raises(Http401):
         edit_todolist_view(request, todolist.id_)
 
 
 def test_update_todolist_view_raises_403_when_not_logged_in():
-    request = json_request(
-        "POST", "/delete_todolist/10", {"name": "name", "description": "description"}
-    )
+    data = {"name": "name", "description": "description"}
+    request = HttpRequest.create("POST", "/update_todolist/10", "HTTP/1.1", body=data)
 
     with pytest.raises(Http403):
         update_todolist_view(request, 10)
@@ -273,11 +264,9 @@ def test_update_todolist_view_raises_404_when_todolist_does_not_exists(
     user_and_session,
 ):
     user, session = user_and_session
-    request = json_request(
-        "POST",
-        "/delete_todolist/10",
-        {"name": "name", "description": "description"},
-        session,
+    data = {"name": "name", "description": "description"}
+    request = HttpRequest.create(
+        "POST", "/update_todolist/10", "HTTP/1.1", session, data
     )
 
     with pytest.raises(Http404):
@@ -285,7 +274,7 @@ def test_update_todolist_view_raises_404_when_todolist_does_not_exists(
 
 
 def test_update_todolist_view_raises_405_when_method_different_than_POST():
-    request = HttpRequest(f"GET /update_todolist/10 HTTP/1.1\n".encode())
+    request = HttpRequest.create("GET", "/update_todolist/10", "HTTP/1.1")
 
     with pytest.raises(Http405):
         update_todolist_view(request, 10)
