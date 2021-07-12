@@ -1,4 +1,4 @@
-import { sendRequest, getDataFromForm } from "./utils.js";
+import { sendRequest, getDataFromForm, clearInnerText } from "./utils.js";
 
 const editToDoListForm = document.querySelector("#edit-todolist-form");
 const createTaskForm = document.querySelector("#create-task-form");
@@ -11,27 +11,6 @@ editToDoListForm.addEventListener("submit", editToDoList);
 createTaskForm.addEventListener("submit", createTask);
 
 buildTasks();
-
-
-function editToDoList(e) {
-    e.preventDefault();
-    const data = getDataFromForm(editToDoListForm, {"name": "#todolist-name", "description": "#todolist-description"})
-    let statusCode = null;
-    sendRequest("POST", `/update_todolist/${id_}`, data)
-    .then(res => {
-        statusCode = res.status;
-        return res;
-    })
-    .then(res => res.json())
-    .then(res => {
-        if(statusCode != 200) {
-            editToDoListForm.querySelector("#update-errors").innerText = res["error"];
-        }
-        else {
-            editToDoListForm.querySelector("#update-errors").innerText = "";
-        }
-    });
-}
 
 
 async function buildTasks() {
@@ -67,6 +46,39 @@ function createTaskHtmlElement(el) {
 }
 
 
+function editToDoList(e) {
+    e.preventDefault();
+    const data = getDataFromForm(editToDoListForm, {"name": "#todolist-name", "description": "#todolist-description"});
+    let statusCode = null;
+
+    sendRequest("POST", `/update_todolist/${id_}`, data)
+    .then(res => {
+        statusCode = res.status;
+        return res;
+    })
+    .then(res => res.json())
+    .then(res => {
+        if(statusCode == 200) {
+            successfulUpdate()
+        }
+        else {
+            failedUpdate(res);
+        }
+    })
+    .catch(error => console.log("Error", error));
+}
+
+
+function successfulUpdate() {
+    clearInnerText("#update-errors");
+}
+
+
+function failedUpdate(res) {
+    editToDoListForm.querySelector("#update-errors").innerText = res["error"];
+}
+
+
 function createTask(e) {
     e.preventDefault();
     const data = getDataFromForm(createTaskForm, {"content": "#task-content"});
@@ -81,14 +93,25 @@ function createTask(e) {
     .then(res => res.json())
     .then(res => {
         if (statusCode == 201) {
-            createTaskHtmlElement(res);
-            createTaskForm.reset();
+            successfulTaskCreation(res);
         }
         else {
-            createTaskForm.querySelector("#create-task-errors").innerText = res["error"];
+            failedTaskCreation(res);
         }
     })
     .catch(error => console.log("Error", error));
+}
+
+
+function successfulTaskCreation(res) {
+    createTaskHtmlElement(res);
+    createTaskForm.reset();
+    clearInnerText("#create-task-errors");
+}
+
+
+function failedTaskCreation(res) {
+    createTaskForm.querySelector("#create-task-errors").innerText = res["error"];
 }
 
 
@@ -99,9 +122,15 @@ function deleteTask(e) {
     sendRequest("POST", `/delete_task/${taskId}`)
     .then(res => {
         if(res.status == 200) {
-            task.remove();
+            successfulTaskDeletion(task);
         }
     })
+    .catch(error => console.log("Error", error));
+}
+
+
+function successfulTaskDeletion(task) {
+    task.remove();
 }
 
 
@@ -112,7 +141,13 @@ function markAsDone(e) {
     sendRequest("POST", `/mark_task_as_done/${taskId}`)
     .then(res => {
         if(res.status == 200) {
-            task.classList.add("task-done");
+            successfulTaskMarking(task);
         }
-    });
+    })
+    .catch(error => console.log("Error", error));
+}
+
+
+function successfulTaskMarking(task) {
+     task.classList.add("task-done");
 }

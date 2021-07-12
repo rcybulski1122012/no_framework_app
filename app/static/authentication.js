@@ -1,4 +1,4 @@
-import { sendRequest, getDataFromForm } from "./utils.js";
+import { sendRequest, getDataFromForm, clearInnerText } from "./utils.js";
 
 const loginForm = document.querySelector("#login-form");
 const registerForm = document.querySelector("#register-form");
@@ -42,7 +42,7 @@ function failedLogin(res){
 
 function register(e) {
     e.preventDefault()
-    clearRegisterMessagesDivs();
+    clearInnerText("#register-success", "#register-errors");
     const data = getDataFromForm(registerForm, {
         "username": "#username-register",
         "password1": "#password1-register",
@@ -59,27 +59,24 @@ function register(e) {
     })
     .then(res => res.json())
     .then(res => {
-        if(statusCode == 201)
-            successRegister(res);
-        else
-            failedRegister(res);
+        if(statusCode == 201) {
+            successfulRegistration(res);
+        }
+        else {
+            failedRegistration(res);
+        }
     })
     .catch(error => console.log("Error", error));
 }
 
 
-function clearRegisterMessagesDivs() {
-    document.querySelector("#register-success").innerText = "";
-    document.querySelector("#register-errors").innerText = "";
-}
-
-
-function successRegister(res) {
+function successfulRegistration(res) {
     registerForm.reset();
+    clearInnerText("#register-errors");
     document.querySelector("#register-success").innerText = "Your account has been created successfully.";
 }
 
 
-function failedRegister(res) {
+function failedRegistration(res) {
     document.querySelector("#register-errors").innerText = res["error"];
 }

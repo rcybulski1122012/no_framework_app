@@ -1,7 +1,8 @@
-import { sendRequest, getDataFromForm } from "./utils.js";
+import { sendRequest, getDataFromForm, clearInnerText } from "./utils.js";
 
 const toDoListsList = document.querySelector("#todolists-list");
 const createToDoListForm = document.querySelector("#create-todolist-form");
+const todolistTemplate = document.querySelector("#todolist-template").content.cloneNode(true);
 
 createToDoListForm.addEventListener("submit", createToDoList);
 
@@ -21,43 +22,27 @@ async function getToDoLists() {
     return result["todolists"];
 }
 
+
 function createToDoListHtmlElements(data) {
     data.forEach(createToDoListHtmlElement);
 }
 
 
 function createToDoListHtmlElement(el) {
-    const toDoList = document.createElement("div");
-    const deleteButton = document.createElement("button");
-    const editButton = document.createElement("a");
-    const h3 = document.createElement("h3");
-    const p = document.createElement("p");
-    const hr = document.createElement("hr");
+    const todolist = todolistTemplate.querySelector(".todolist").cloneNode(true);
+    todolist.dataset.id = el["id_"];
+    todolist.querySelector(".edit-todolist").setAttribute("href", `/edit_todolist/${el["id_"]}`);
+    todolist.querySelector(".todolist-name").innerText = el["name"];
+    todolist.querySelector(".todolist-description").innerText = el["description"];
+    todolist.querySelector(".delete-todolist").addEventListener("click", deleteToDoList);
 
-    toDoList.classList.add("todolist");
-    toDoList.dataset.id = el["id_"];
-    deleteButton.innerText = "Delete"
-    deleteButton.classList.add("btn", "btn-danger");
-    editButton.innerText = "Edit"
-    editButton.classList.add("btn", "btn-info");
-    editButton.setAttribute("href", `/edit_todolist/${el["id_"]}`)
-    h3.innerText = el["name"];
-    p.innerText = el["description"];
-
-    deleteButton.addEventListener("click", deleteToDoList);
-
-    toDoList.append(h3);
-    toDoList.append(p);
-    toDoList.append(deleteButton);
-    toDoList.append(editButton);
-    toDoList.append(hr);
-    toDoListsList.append(toDoList);
+    toDoListsList.append(todolist);
 }
 
 
 function createToDoList(e) {
     e.preventDefault();
-    clearMessagesDivs();
+    clearInnerText("#create-errors");
     const data = getDataFromForm(createToDoListForm, {"name": "#todolist-name", "description": "#todolist-description"})
     let statusCode = null;
 
@@ -69,19 +54,25 @@ function createToDoList(e) {
     .then(res => res.json())
     .then(res => {
         if (statusCode == 201) {
-            createToDoListHtmlElement(res);
-            createToDoListForm.reset();
+            successfulToDoListCreation(res);
         }
         else {
-            createToDoListForm.querySelector("#create-errors").innerText = res["error"];
+            failedToDoListCreation(res);
         }
     })
     .catch(error => console.log("Error", error));
 }
 
 
-function clearMessagesDivs() {
-    createToDoListForm.querySelector("#create-errors").innerText = "";
+function successfulToDoListCreation(res) {
+    createToDoListHtmlElement(res);
+    createToDoListForm.reset();
+    clearInnerText("#create-errors");
+}
+
+
+function failedToDoListCreation(res) {
+    createToDoListForm.querySelector("#create-errors").innerText = res["error"];
 }
 
 
@@ -91,7 +82,13 @@ function deleteToDoList(e) {
     sendRequest("POST", `/delete_todolist/${id_}`, {})
     .then(res => {
         if(res.status == 200) {
-            todolist.remove();
+            successfulToDoListDeletion(todolist);
         }
-    });
+    })
+    .catch(error => console.log("Error", error));
+}
+
+
+function successfulToDoListDeletion(todolist) {
+    todolist.remove();
 }

@@ -25,4 +25,11 @@ function getDataFromForm(form, nameSelectorObj) {
 }
 
 
-export {sendRequest, getDataFromForm}
+function clearInnerText(...selectors) {
+    selectors.forEach(el => {
+        document.querySelector(el).innerText = "";
+    });
+}
+
+
+export {sendRequest, getDataFromForm, clearInnerText};
