@@ -5,8 +5,8 @@ import pytest
 from app.auth.models import AppUser
 from app.auth.views import create_user_view, login_user_view, logout_view
 from app.core.http.errors import Http400, Http403, Http405
-from app.core.http.request import HttpRequest
 from app.core.http.sessions import Session
+from tests.utils import create_request
 
 
 def test_create_user_view_creates_user_when_everything_is_ok():
@@ -16,7 +16,7 @@ def test_create_user_view_creates_user_when_everything_is_ok():
         "password2": "Password0!",
         "email": "emial@gmail.com",
     }
-    request = HttpRequest.create("POST", "/register", "HTTP/1.1", body=data)
+    request = create_request("POST", "/register", "HTTP/1.1", body=data)
 
     response = create_user_view(request)
 
@@ -25,7 +25,7 @@ def test_create_user_view_creates_user_when_everything_is_ok():
 
 
 def test_create_user_view_raises_405_when_invalid_method():
-    request = HttpRequest.create("GET", "/register", "HTTP/1.1", body={})
+    request = create_request("GET", "/register", "HTTP/1.1", body={})
 
     with pytest.raises(Http405):
         create_user_view(request)
@@ -33,7 +33,7 @@ def test_create_user_view_raises_405_when_invalid_method():
 
 def test_create_user_view_raises_400_when_invalid_request_data():
     data = {"invalid": "data"}
-    request = HttpRequest.create("POST", "/register", "HTTP/1.1", body=data)
+    request = create_request("POST", "/register", "HTTP/1.1", body=data)
 
     with pytest.raises(Http400):
         create_user_view(request)
@@ -46,7 +46,7 @@ def test_create_user_view_returns_error_when_passwords_are_not_the_same():
         "password2": "Password2!",
         "email": "email@gmail.com",
     }
-    request = HttpRequest.create("POST", "/register", "HTTP/1.1", body=data)
+    request = create_request("POST", "/register", "HTTP/1.1", body=data)
 
     response = create_user_view(request)
 
@@ -63,7 +63,7 @@ def test_create_user_view_returns_error_when_username_is_taken():
         "password2": "Password0!",
         "email": "email@gmail.com",
     }
-    request = HttpRequest.create("POST", "/register", "HTTP/1.1", body=data)
+    request = create_request("POST", "/register", "HTTP/1.1", body=data)
 
     response = create_user_view(request)
 
@@ -80,7 +80,7 @@ def test_create_user_view_returns_error_when_email_is_taken():
         "password2": "Password0!",
         "email": "email@gmail.com",
     }
-    request = HttpRequest.create("POST", "/register", "HTTP/1.1", body=data)
+    request = create_request("POST", "/register", "HTTP/1.1", body=data)
 
     response = create_user_view(request)
 
@@ -92,7 +92,7 @@ def test_login_user_view_creates_session_object_and_creates_cookie():
         username="username", password="Password0!", email="email@gmail.com"
     )
     data = {"username": "username", "password": "Password0!"}
-    request = HttpRequest.create("POST", "/login", "HTTP/1.1", body=data)
+    request = create_request("POST", "/login", "HTTP/1.1", body=data)
 
     response = login_user_view(request)
     body = json.loads(response.body)
@@ -105,7 +105,7 @@ def test_login_user_view_creates_session_object_and_creates_cookie():
 
 def test_login_user_view_returns_error_when_user_does_not_exist():
     data = {"username": "username", "password": "Password0!"}
-    request = HttpRequest.create("POST", "/login", "HTTP/1.1", body=data)
+    request = create_request("POST", "/login", "HTTP/1.1", body=data)
 
     response = login_user_view(request)
 
@@ -115,7 +115,7 @@ def test_login_user_view_returns_error_when_user_does_not_exist():
 def test_login_user_view_returns_error_when_invalid_password():
     AppUser.create(username="username", password="Password0!", email="email@gmail.com")
     data = {"username": "username", "password": "invalid-password"}
-    request = HttpRequest.create("POST", "/login", "HTTP/1.1", body=data)
+    request = create_request("POST", "/login", "HTTP/1.1", body=data)
 
     response = login_user_view(request)
 
@@ -123,7 +123,7 @@ def test_login_user_view_returns_error_when_invalid_password():
 
 
 def test_login_user_view_raises_405_when_invalid_method():
-    request = HttpRequest.create("GET", "/login", "HTTP/1.1", body={})
+    request = create_request("GET", "/login", "HTTP/1.1", body={})
 
     with pytest.raises(Http405):
         login_user_view(request)
@@ -131,7 +131,7 @@ def test_login_user_view_raises_405_when_invalid_method():
 
 def test_logout_view_deletes_the_session_and_redirects(user_and_session):
     user, session = user_and_session
-    request = HttpRequest.create("POST", "/logout", "HTTP/1.1", session=session)
+    request = create_request("POST", "/logout", "HTTP/1.1", session=session)
     response = logout_view(request)
 
     result = Session.select(id_=session.id_)
@@ -141,7 +141,7 @@ def test_logout_view_deletes_the_session_and_redirects(user_and_session):
 
 
 def test_logout_view_raises_403_when_not_logged_in():
-    request = HttpRequest.create("POST", "/logout", "HTTP/1.1")
+    request = create_request("POST", "/logout", "HTTP/1.1")
 
     with pytest.raises(Http403):
         logout_view(request)

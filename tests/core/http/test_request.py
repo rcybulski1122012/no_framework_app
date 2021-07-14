@@ -77,32 +77,3 @@ def test_raises_exception_when_bad_request():
     request = b"BAD REQUEST"
     with pytest.raises(InvalidRequestFormat):
         HttpRequest(request)
-
-
-session = Session(data={})
-
-
-@pytest.mark.parametrize(
-    "kwargs, expected",
-    [
-        ({"method": "GET", "path": "/", "version": "HTTP/1.1"}, "GET / HTTP/1.1"),
-        (
-            {"method": "GET", "path": "/", "version": "HTTP/1.1", "session": session},
-            f"GET / HTTP/1.1\nCookie: session_id={session.session_id}",
-        ),
-        (
-            {
-                "method": "GET",
-                "path": "/",
-                "version": "HTTP/1.1",
-                "body": {"first": 1, "second": 2},
-            },
-            'GET / HTTP/1.1\nContent-Type: application/json\nContent-Length: 25\n\n{"first": 1, "second": 2}',
-        ),
-    ],
-)
-def test_request_create(kwargs, expected):
-    request = HttpRequest.create(**kwargs)
-
-    print(request.request_string)
-    assert request.request_string == expected
