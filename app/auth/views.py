@@ -5,7 +5,7 @@ from app.auth.shortcuts import authenticate
 from app.core.errors import ValidationError
 from app.core.http.decorators import http_method_required
 from app.core.http.response import HttpResponse
-from app.core.http.sessions import Session
+from app.core.http.sessions import Session, get_current_session_or_403
 from app.core.shortcuts import get_data_from_request_body, json_response
 
 
@@ -49,3 +49,10 @@ def login_user_view(request):
     return json_response(
         request, {"session_id": str(session.session_id)}, status_code=201
     )
+
+
+def logout_view(request):
+    session = get_current_session_or_403(request)
+    session.delete()
+    headers = {"Location": "/"}
+    return HttpResponse(request.version, 302, "Found", headers)

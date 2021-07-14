@@ -3,8 +3,8 @@ import json
 import pytest
 
 from app.auth.models import AppUser
-from app.auth.views import create_user_view, login_user_view
-from app.core.http.errors import Http400, Http405
+from app.auth.views import create_user_view, login_user_view, logout_view
+from app.core.http.errors import Http400, Http403, Http405
 from app.core.http.request import HttpRequest
 from app.core.http.sessions import Session
 
@@ -127,3 +127,21 @@ def test_login_user_view_raises_405_when_invalid_method():
 
     with pytest.raises(Http405):
         login_user_view(request)
+
+
+def test_logout_view_deletes_the_session_and_redirects(user_and_session):
+    user, session = user_and_session
+    request = HttpRequest.create("POST", "/logout", "HTTP/1.1", session=session)
+    response = logout_view(request)
+
+    result = Session.select(id_=session.id_)
+
+    assert result == []
+    assert response.status_code == 302
+
+
+def test_logout_view_raises_403_when_not_logged_in():
+    request = HttpRequest.create("POST", "/logout", "HTTP/1.1")
+
+    with pytest.raises(Http403):
+        logout_view(request)

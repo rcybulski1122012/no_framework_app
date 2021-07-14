@@ -1,4 +1,4 @@
-from app.auth.views import create_user_view, login_user_view
+from app.auth.views import create_user_view, login_user_view, logout_view
 from app.todolists.tasks_views import (create_task_view, delete_task_view,
                                        mark_task_as_done_view, tasks_list_view)
 from app.todolists.todolists_views import (create_todolist_view,
@@ -13,6 +13,7 @@ urls = {
     "/static/<file_name>": static,
     "/register": create_user_view,
     "/login": login_user_view,
+    "/logout": logout_view,
     "/todolists": todolists_list_view,
     "/create_todolist": create_todolist_view,
     "/delete_todolist/<id_>": delete_todolist_view,
