@@ -40,4 +40,6 @@ class InvalidSessionData(Exception):
 
 
 class InvalidRequestFormat(Exception):
-    pass
+    @staticmethod
+    def get_response():
+        return HttpResponse("HTTP/1.1", 400, "Bad Request")

@@ -12,8 +12,8 @@ class RequestHandler:
     def __call__(self, request):
         try:
             request = HttpRequest(request)
-        except InvalidRequestFormat:
-            return HttpResponse("HTTP/1.1", 400, "Bad Request").get_bytes()
+        except InvalidRequestFormat as e:
+            return e.get_response().get_bytes()
 
         try:
             return self._handle_request(request)
