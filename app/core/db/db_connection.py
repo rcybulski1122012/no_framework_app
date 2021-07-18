@@ -33,10 +33,10 @@ class DBConnection:
 
 
 try:
-    host = os.environ["HOST"]
-    database = os.environ["DATABASE"]
-    user = os.environ["USER"]
-    password = os.environ["PASSWORD"]
+    host = os.environ["DB_HOST"]
+    database = os.environ["DB_NAME"]
+    user = os.environ["DB_USER"]
+    password = os.environ["DB_PASSWORD"]
 except KeyError:
     raise MissingEnvironmentVariable("Please provide required environment variables")
 else:
