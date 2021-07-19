@@ -4,8 +4,12 @@ import pytest
 
 from app.core.http.errors import Http400, Http401, Http403, Http404, Http405
 from app.todolists.models import Task, ToDoList
-from app.todolists.tasks_views import (create_task_view, delete_task_view,
-                                       mark_task_as_done_view, tasks_list_view)
+from app.todolists.tasks_views import (
+    create_task_view,
+    delete_task_view,
+    mark_task_as_done_view,
+    tasks_list_view,
+)
 from tests.utils import create_request
 
 

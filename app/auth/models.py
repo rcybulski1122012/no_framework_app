@@ -1,9 +1,13 @@
 import bcrypt
 
 from app.core.db.model import Field, Model
-from app.core.db.validators import (AllowedCharsValidator, EmailValidator,
-                                    MaxLenValidator, MinLenValidator,
-                                    PasswordValidator)
+from app.core.db.validators import (
+    AllowedCharsValidator,
+    EmailValidator,
+    MaxLenValidator,
+    MinLenValidator,
+    PasswordValidator,
+)
 
 
 class AppUser(Model):

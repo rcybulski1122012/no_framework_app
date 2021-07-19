@@ -6,8 +6,7 @@ from app.core.errors import ValidationError
 from app.core.http.decorators import http_method_required
 from app.core.http.response import HttpResponse
 from app.core.http.sessions import Session, get_current_session_or_403
-from app.core.shortcuts import (get_data_from_request_body, json_response,
-                                redirect)
+from app.core.shortcuts import get_data_from_request_body, json_response, redirect
 
 
 @http_method_required("POST")

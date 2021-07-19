@@ -1,11 +1,17 @@
 from app.auth.views import create_user_view, login_user_view, logout_view
-from app.todolists.tasks_views import (create_task_view, delete_task_view,
-                                       mark_task_as_done_view, tasks_list_view)
-from app.todolists.todolists_views import (create_todolist_view,
-                                           delete_todolist_view,
-                                           edit_todolist_view,
-                                           todolists_list_view,
-                                           update_todolist_view)
+from app.todolists.tasks_views import (
+    create_task_view,
+    delete_task_view,
+    mark_task_as_done_view,
+    tasks_list_view,
+)
+from app.todolists.todolists_views import (
+    create_todolist_view,
+    delete_todolist_view,
+    edit_todolist_view,
+    todolists_list_view,
+    update_todolist_view,
+)
 from app.views import index, static
 
 urls = {

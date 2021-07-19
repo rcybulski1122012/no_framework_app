@@ -5,8 +5,13 @@ import pytest
 
 from app.auth.models import AppUser
 from app.core.http.errors import Http400, Http404
-from app.core.shortcuts import (get_data_from_request_body, get_object_or_404,
-                                json_response, render_static, render_template)
+from app.core.shortcuts import (
+    get_data_from_request_body,
+    get_object_or_404,
+    json_response,
+    render_static,
+    render_template,
+)
 
 
 def test_render_template(tmpdir, GET_request_obj):

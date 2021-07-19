@@ -1,8 +1,12 @@
 import pytest
 
-from app.core.db.validators import (AllowedCharsValidator, EmailValidator,
-                                    MaxLenValidator, MinLenValidator,
-                                    PasswordValidator)
+from app.core.db.validators import (
+    AllowedCharsValidator,
+    EmailValidator,
+    MaxLenValidator,
+    MinLenValidator,
+    PasswordValidator,
+)
 from app.core.errors import ValidationError
 
 

@@ -5,11 +5,13 @@ import pytest
 from app.core.http.errors import Http400, Http401, Http403, Http404, Http405
 from app.core.http.sessions import Session
 from app.todolists.models import ToDoList
-from app.todolists.todolists_views import (create_todolist_view,
-                                           delete_todolist_view,
-                                           edit_todolist_view,
-                                           todolists_list_view,
-                                           update_todolist_view)
+from app.todolists.todolists_views import (
+    create_todolist_view,
+    delete_todolist_view,
+    edit_todolist_view,
+    todolists_list_view,
+    update_todolist_view,
+)
 from tests.utils import create_request
 
 
