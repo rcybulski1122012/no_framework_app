@@ -3,8 +3,6 @@
 Simple to-do lists application made with Python without any web framework and ORM.
 Created for educational purposes.
 
-[Live version](http://no-framework-app.eu-4.evennode.com/)
-
 ## Features
 * Creating, editing, and deleting to-do lists
 * Creating, deleting and marking tasks as done 
